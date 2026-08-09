@@ -1,0 +1,9 @@
+dose,group,treated,n,pre_accuracy,post_accuracy,mean_delta_margin,cir
+32,different_form_control,True,32,1.0,1.0,1.2298138793557882,0.0
+32,false_friend,False,50,0.78,0.68,-0.5130916832387448,0.1
+32,false_friend,True,50,0.78,0.58,-1.0730851197615265,0.24
+32,true_friend,True,58,1.0,1.0,1.4100599828465232,0.0
+128,different_form_control,True,32,1.0,1.0,1.3667074516415596,0.0
+128,false_friend,False,50,0.78,0.66,-0.4866264472901821,0.12
+128,false_friend,True,50,0.78,0.58,-0.9979728257656098,0.24
+128,true_friend,True,58,1.0,1.0,1.3874396789690544,0.0

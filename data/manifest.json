@@ -1,0 +1,14 @@
+{
+  "seed": 20260810,
+  "n_total": 95,
+  "counts": {
+    "false_friend": 50,
+    "true_friend": 29,
+    "different_form_control": 16
+  },
+  "false_friend_treated_per_fold": [
+    25,
+    25
+  ],
+  "selection": "stable seeded sample before any model evaluation"
+}

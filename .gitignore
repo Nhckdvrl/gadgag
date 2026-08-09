@@ -1,0 +1,10 @@
+external/
+data/items.jsonl
+results/adapters/
+results/extensions/adapters/
+results/**/*.jsonl
+results/**/*.log
+**/__pycache__/
+*.pyc
+.venv/
+.DS_Store
