@@ -1,0 +1,32 @@
+{
+  "decision": "KILL",
+  "checks": {
+    "localized_ci_below_zero": true,
+    "dose_response": false,
+    "cir_gap_ge_0.10": true
+  },
+  "crossover": [
+    {
+      "dose": 32,
+      "n_words": 50,
+      "paired_delta_margin": -0.5599934365227819,
+      "ci95_low": -0.969602783982642,
+      "ci95_high": -0.1615779522061351,
+      "treated_cir": 0.3076923076923077,
+      "heldout_cir": 0.1282051282051282,
+      "eligible_treated": 39,
+      "eligible_heldout": 39
+    },
+    {
+      "dose": 128,
+      "n_words": 50,
+      "paired_delta_margin": -0.5113463784754276,
+      "ci95_low": -0.9874351329170167,
+      "ci95_high": -0.042805482890456915,
+      "treated_cir": 0.3076923076923077,
+      "heldout_cir": 0.15384615384615385,
+      "eligible_treated": 39,
+      "eligible_heldout": 39
+    }
+  ]
+}
