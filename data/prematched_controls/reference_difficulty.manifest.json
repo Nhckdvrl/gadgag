@@ -1,0 +1,6 @@
+{
+  "model": "Qwen/Qwen2.5-7B-Instruct",
+  "role": "design-only reference covariate",
+  "target_outcomes_read": false,
+  "items": 2586
+}

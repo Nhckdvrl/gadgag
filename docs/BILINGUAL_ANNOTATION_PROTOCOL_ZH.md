@@ -7,6 +7,7 @@
 ## 覆盖范围与盲法
 
 - 354 个 paired words，JA→ZH 与 ZH→JA 各一行，因此每位标注者 708 行。
+- 最优标注者配置为：A 中文母语且日语高级，B 日语母语且中文高级；实在无法满足时，至少两位能独立理解完整中日语境的双语者，并在报告中披露语言背景。
 - 两位标注者的行顺序、A/B option 顺序分别随机化。
 - 标注者不可查看 `private_unblinding_key.csv`、模型结果或另一位标注者答案。
 - 若标注者知道研究假设，只说明“检查选项质量”，不说明预期哪个条件更强。
@@ -44,6 +45,7 @@
 - yes/no/uncertain：报告加权 kappa；
 - naturalness：报告 ICC(2,1) 或 Spearman，并给每项分布；
 - 同时报告保留率、按方向保留率、各 confound 数量。
+- 预注册 reliability gate：两个语义判断 weighted κ ≥ 0.60，自然度 ICC(2,1) ≥ 0.50；未达标先 adjudication 或修订 measurement，不能把目标模型结果用于决定剔除规则。
 - 主结果必须同时给 full 354 intent-to-treat 与 validated subset；不能只报告筛选后更好看的结果。
 
 ## 生成命令

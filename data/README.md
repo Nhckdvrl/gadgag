@@ -12,6 +12,12 @@ stimuli, not a new gold benchmark.
 No original source sentences are redistributed. Reproduction scripts expect a
 separately obtained StingrayBench checkout under `external/`.
 
+`prematched_controls/` contains only public design metadata, IDs, feature
+balances, reference-model difficulty scores and SHA-256 provenance. Files whose
+names begin with `private_` contain source text and are ignored. The frozen
+matching is outcome-blind; its controls are candidates until two bilingual
+annotators pass them under `../docs/FINAL_MEASUREMENT_HANDOFF_ZH.md`.
+
 The formal factorial subset is not selected from the `Cognates` field alone.
 `src/stingray_factorial.py` additionally requires the exact CJK string, or a
 standalone case-insensitive Latin word, to occur in all four contexts. This

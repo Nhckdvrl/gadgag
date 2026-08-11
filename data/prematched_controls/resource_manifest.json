@@ -1,0 +1,35 @@
+{
+  "retrieved_utc": "2026-08-11",
+  "resources": [
+    {
+      "name": "JMdict_e.gz",
+      "source": "https://www.edrdg.org/pub/Nihongo/JMdict_e.gz",
+      "sha256": "5ccad90ce9ba8ea04024f22db6caabb25b1e83f7ab3c8fa14a97af4b1b7c0bf3",
+      "role": "Japanese lexicon and English gloss candidate generation"
+    },
+    {
+      "name": "cedict.txt.gz",
+      "source": "https://www.mdbg.net/chinese/export/cedict/cedict_1_0_ts_utf-8_mdbg.txt.gz",
+      "sha256": "cdd661993ff46764184252231bc3bf9b28d2d9460f9f67da45d557371b74884b",
+      "role": "Chinese lexicon and English gloss candidate generation"
+    },
+    {
+      "name": "cmn_sentences.tsv.bz2",
+      "source": "https://downloads.tatoeba.org/exports/per_language/cmn/cmn_sentences.tsv.bz2",
+      "sha256": "c0905a806c1912cc04bf1ec2efe5067b3f306a6890a6a19f5f60f40c9c18e13d",
+      "role": "Natural Chinese contexts"
+    },
+    {
+      "name": "jpn_sentences.tsv.bz2",
+      "source": "https://downloads.tatoeba.org/exports/per_language/jpn/jpn_sentences.tsv.bz2",
+      "sha256": "62c2ba106de8de3d9b8968156de28fbfd993de6e65772a44e586b5e872f0634a",
+      "role": "Natural Japanese contexts"
+    },
+    {
+      "name": "StingrayBench zh_ja.csv",
+      "source": "https://huggingface.co/datasets/StingrayBench/StingrayBench",
+      "sha256": "dcd1ae61203e41383da4478e8acc738ca7f6ea763eae305612f3b9c3081ceb5a",
+      "role": "Frozen false-friend targets"
+    }
+  ]
+}
