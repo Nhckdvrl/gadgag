@@ -1,0 +1,40 @@
+# Assistant-prime robustness
+
+| pair   | model      |   lag | comparison                  |   n_items |   estimate |    ci_low |      ci_high |
+|:-------|:-----------|------:|:----------------------------|----------:|-----------:|----------:|-------------:|
+| id_tl  | gemma3_12b |     0 | wrong_exact_minus_language  |        33 | -3.27401   | -5.46251  | -1.13259     |
+| id_tl  | gemma3_12b |     0 | wrong_exact_minus_masked    |        33 | -0.933193  | -2.64242  |  0.809281    |
+| id_tl  | gemma3_12b |     0 | wrong_masked_minus_language |        33 | -2.34082   | -4.26147  | -0.50341     |
+| id_tl  | gemma3_12b |     2 | wrong_exact_minus_language  |        33 | -2.04774   | -3.82934  | -0.363788    |
+| id_tl  | gemma3_12b |     2 | wrong_exact_minus_masked    |        33 | -1.16646   | -2.22728  | -0.0899154   |
+| id_tl  | gemma3_12b |     2 | wrong_masked_minus_language |        33 | -0.881282  | -2.53777  |  0.652465    |
+| id_tl  | gemma3_12b |     8 | wrong_exact_minus_language  |        33 | -2.89875   | -4.46529  | -1.5323      |
+| id_tl  | gemma3_12b |     8 | wrong_exact_minus_masked    |        33 | -2.36184   | -3.27517  | -1.41134     |
+| id_tl  | gemma3_12b |     8 | wrong_masked_minus_language |        33 | -0.536908  | -1.75247  |  0.462599    |
+| id_tl  | qwen3_8b   |     0 | wrong_exact_minus_language  |        33 | -0.035503  | -0.403509 |  0.313459    |
+| id_tl  | qwen3_8b   |     0 | wrong_exact_minus_masked    |        33 | -0.0248974 | -0.496177 |  0.360046    |
+| id_tl  | qwen3_8b   |     0 | wrong_masked_minus_language |        33 | -0.0106056 | -0.50988  |  0.508286    |
+| id_tl  | qwen3_8b   |     2 | wrong_exact_minus_language  |        33 | -0.251881  | -0.672553 |  0.130505    |
+| id_tl  | qwen3_8b   |     2 | wrong_exact_minus_masked    |        33 | -0.0951069 | -0.360154 |  0.175641    |
+| id_tl  | qwen3_8b   |     2 | wrong_masked_minus_language |        33 | -0.156774  | -0.503915 |  0.13593     |
+| id_tl  | qwen3_8b   |     8 | wrong_exact_minus_language  |        33 | -0.319467  | -0.73031  |  0.0584704   |
+| id_tl  | qwen3_8b   |     8 | wrong_exact_minus_masked    |        33 | -0.22736   | -0.502103 |  0.0604377   |
+| id_tl  | qwen3_8b   |     8 | wrong_masked_minus_language |        33 | -0.0921065 | -0.407675 |  0.203968    |
+| zh_ja  | gemma3_12b |     0 | wrong_exact_minus_language  |        27 | -0.386614  | -1.91029  |  1.31725     |
+| zh_ja  | gemma3_12b |     0 | wrong_exact_minus_masked    |        27 |  1.1211    | -0.418157 |  2.75279     |
+| zh_ja  | gemma3_12b |     0 | wrong_masked_minus_language |        27 | -1.50771   | -2.7573   | -0.40445     |
+| zh_ja  | gemma3_12b |     2 | wrong_exact_minus_language  |        27 | -0.305407  | -1.62969  |  1.25701     |
+| zh_ja  | gemma3_12b |     2 | wrong_exact_minus_masked    |        27 |  0.0213914 | -1.13309  |  1.38349     |
+| zh_ja  | gemma3_12b |     2 | wrong_masked_minus_language |        27 | -0.326798  | -0.967789 |  0.322507    |
+| zh_ja  | gemma3_12b |     8 | wrong_exact_minus_language  |        27 | -0.833001  | -2.04051  |  0.480433    |
+| zh_ja  | gemma3_12b |     8 | wrong_exact_minus_masked    |        27 | -0.582292  | -1.65564  |  0.74313     |
+| zh_ja  | gemma3_12b |     8 | wrong_masked_minus_language |        27 | -0.250709  | -0.924806 |  0.433637    |
+| zh_ja  | qwen3_8b   |     0 | wrong_exact_minus_language  |        27 | -0.930413  | -1.60251  | -0.30394     |
+| zh_ja  | qwen3_8b   |     0 | wrong_exact_minus_masked    |        27 | -0.289201  | -0.613144 |  0.000215653 |
+| zh_ja  | qwen3_8b   |     0 | wrong_masked_minus_language |        27 | -0.641212  | -1.13039  | -0.167537    |
+| zh_ja  | qwen3_8b   |     2 | wrong_exact_minus_language  |        27 | -0.875954  | -1.44431  | -0.357294    |
+| zh_ja  | qwen3_8b   |     2 | wrong_exact_minus_masked    |        27 | -0.413411  | -0.804783 | -0.0455197   |
+| zh_ja  | qwen3_8b   |     2 | wrong_masked_minus_language |        27 | -0.462543  | -0.791625 | -0.120785    |
+| zh_ja  | qwen3_8b   |     8 | wrong_exact_minus_language  |        27 | -1.04271   | -1.61491  | -0.495791    |
+| zh_ja  | qwen3_8b   |     8 | wrong_exact_minus_masked    |        27 | -0.738986  | -1.18467  | -0.321692    |
+| zh_ja  | qwen3_8b   |     8 | wrong_masked_minus_language |        27 | -0.303721  | -0.64243  | -0.0289238   |

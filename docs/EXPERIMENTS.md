@@ -214,3 +214,69 @@ local checkpoints from Qwen and Gemma. Phi-3 was also excluded after its cached
 SentencePiece/tokenizer configuration failed to load in the fixed environment.
 These are infrastructure exclusions, not negative model results; no scores from
 either checkpoint enter the tables.
+
+## 2026-08-11 three-candidate validation
+
+The complete interpretation and kill decisions are in
+`docs/THREE_CANDIDATE_VERDICT_ZH.md`. This section records executable entry
+points.
+
+### C: cross-turn carryover
+
+```bash
+CUDA_VISIBLE_DEVICES=0 PYTHONPATH=src .venv/bin/python src/evaluate_carryover.py \
+  --pair zh_ja --model Qwen/Qwen2.5-7B-Instruct --tag qwen25_7b \
+  --data-root external/StingrayBench/data --batch-size 8
+.venv/bin/python src/analyze_carryover.py
+
+# Changed speaker role, fixed dose 4 robustness replication.
+CUDA_VISIBLE_DEVICES=0 PYTHONPATH=src .venv/bin/python src/evaluate_carryover.py \
+  --pair zh_ja --model Qwen/Qwen3-8B --tag qwen3_8b \
+  --data-root external/StingrayBench/data --batch-size 8 \
+  --doses 4 --lags 0 2 8 --prime-role assistant \
+  --output-path results/extensions/carryover_alt_zh_ja_qwen3_8b.jsonl
+.venv/bin/python src/analyze_carryover_robustness.py
+```
+
+The main design used 27 ZH–JA and 33 ID–TL exact forms, four model checkpoints,
+five prime controls, doses 1/4/8 and lags 0/2/8. Per-item direction scores were
+averaged before paired item bootstrap.
+
+### B: independent non-replacement validation
+
+```bash
+CUDA_VISIBLE_DEVICES=0 PYTHONPATH=src .venv/bin/python src/evaluate_doppel_natural.py \
+  --data-root external/Doppelganger-JC \
+  --model google/gemma-3-12b-it --tag gemma3_12b --batch-size 16
+.venv/bin/python src/analyze_doppel_natural.py
+```
+
+The deterministic loader retains 354 words for which both source directions
+contain the mapped target and correct/shortcut translations have a non-empty
+minimal differing span. Both answer orders are scored. Raw benchmark strings
+stay under the upstream license and are not committed.
+
+### A: causal arbitration
+
+Install and download the Princeton WordNet control resource once:
+
+```bash
+uv pip install --python .venv/bin/python 'nltk>=3.10,<3.11'
+.venv/bin/python -c "import nltk; nltk.download('wordnet'); nltk.download('omw-1.4')"
+```
+
+Then run the two preregistered model families:
+
+```bash
+CUDA_VISIBLE_DEVICES=0 PYTHONPATH=src .venv/bin/python src/evaluate_causal_gating.py \
+  --data-root external/StingrayBench/data --pair zh_ja \
+  --model Qwen/Qwen3-8B --tag qwen3_8b \
+  --items-per-group 20 --layer-stride 4 --batch-size 8
+.venv/bin/python src/analyze_causal_gating.py
+.venv/bin/python src/plot_candidate_results.py
+```
+
+Qwen3 thinking is explicitly disabled for this constrained continuation task.
+The intervention patches only the answer-boundary residual position; therefore
+the pilot establishes causal state transfer but does not yet identify an
+attention/MLP circuit.

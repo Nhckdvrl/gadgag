@@ -1,0 +1,59 @@
+{
+  "date": "2026-08-11",
+  "environment": {
+    "python": "3.12",
+    "torch": "2.8.0+cu128",
+    "transformers": "4.57.6",
+    "pandas": "3.0.5",
+    "numpy": "2.5.2",
+    "nltk": "3.10.2",
+    "hardware": "NVIDIA A100 80GB"
+  },
+  "datasets": {
+    "StingrayBench_commit": "0656813d18ca5d45b52a9ff880230e33265d812e",
+    "Doppelganger_JC_commit": "eb1c4f3f17403af238046bf218dc49643bc2e2e2",
+    "WordNet": "Princeton WordNet distributed through NLTK"
+  },
+  "models": [
+    "Qwen/Qwen2.5-7B-Instruct",
+    "Qwen/Qwen3-8B",
+    "google/gemma-3-4b-it",
+    "google/gemma-3-12b-it"
+  ],
+  "experiments": {
+    "C_main": {
+      "items": {"zh_ja": 27, "id_tl": 33},
+      "models": 4,
+      "output_cells": 22080,
+      "conditions": 5,
+      "doses": [1, 4, 8],
+      "lags": [0, 2, 8]
+    },
+    "C_assistant_prime_robustness": {
+      "items": {"zh_ja": 27, "id_tl": 33},
+      "models": 2,
+      "output_cells": 3840,
+      "dose": 4,
+      "lags": [0, 2, 8]
+    },
+    "B_independent_natural": {
+      "paired_words": 354,
+      "directions": 2,
+      "models": 4,
+      "conditions": 4,
+      "answer_orders": 2,
+      "evaluation_rows": 22656
+    },
+    "A_causal_patching": {
+      "false_friends": 20,
+      "true_friends": 20,
+      "translation_controls": 16,
+      "monolingual_polysemy": 20,
+      "models": ["Qwen/Qwen3-8B", "google/gemma-3-12b-it"],
+      "qwen_candidate_scores": 4608,
+      "gemma_candidate_scores": 5760,
+      "layer_stride": 4
+    }
+  },
+  "publication_policy": "Licensed raw text, per-item JSONL, weights, and activations are ignored; deterministic code and aggregate statistics are committed."
+}
