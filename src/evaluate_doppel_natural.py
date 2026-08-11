@@ -77,6 +77,8 @@ def load_pairs(root: Path) -> list[dict]:
                 "sentence": unicodedata.normalize("NFKC", record["target-sentence"]),
                 "masked": masked, "correct_option": alternatives[0],
                 "shortcut_option": alternatives[1],
+                "correct_translation": record["correct"],
+                "shortcut_translation": record["wrong1"],
             })
         if len(directions) == 2:
             rows.append({"id": f"doppel_{len(rows):03d}", "directions": directions})

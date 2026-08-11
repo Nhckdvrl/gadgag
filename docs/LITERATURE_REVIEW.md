@@ -61,6 +61,15 @@ These works prevent a broad novelty claim such as “we invented calibration” 
 “we invented contrastive sense evaluation”. They also supply the right
 baselines.
 
+[Tug-of-war between idioms' figurative and literal interpretations in LLMs
+(EACL 2026)](https://aclanthology.org/2026.eacl-long.135/) uses causal tracing
+to localize competition between contextual and lexical interpretations in a
+monolingual idiom setting, including attention- and MLP-level pathways. It is a
+particularly close mechanistic precedent: the proposed project must earn its
+distinct contribution through cross-lingual `Language × Sense` interventions,
+exact-form collisions, and matched multilingual controls—not merely by drawing
+another layer-wise ambiguity curve.
+
 ## Gap supported by this pilot
 
 After a second targeted search on 2026-08-11, we did not find a study that jointly:

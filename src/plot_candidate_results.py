@@ -65,5 +65,33 @@ def plot_a():
     fig.tight_layout(); fig.savefig(OUT / "candidate_a_causal.png", dpi=180); plt.close(fig)
 
 
+def plot_target_components():
+    data = pd.read_csv(ROOT / "results/extensions/target_patch_summary.csv")
+    data = data[(data.group == "false_friend") &
+                data.effect.isin(["semantic_main", "language_main"])]
+    models = list(data.model.unique())
+    fig, axes = plt.subplots(len(models), 3, figsize=(11.5, 3.5 * len(models)),
+                             sharex=False, sharey=False, squeeze=False)
+    for row_index, model in enumerate(models):
+        for col_index, component in enumerate(("residual", "attention", "mlp")):
+            ax = axes[row_index, col_index]
+            frame = data[(data.model == model) & (data.component == component)]
+            maximum = frame.layer.max()
+            for effect, curve in frame.groupby("effect"):
+                curve = curve.sort_values("layer")
+                ax.plot(curve.layer / maximum, curve.estimate, marker="o",
+                        label=effect.replace("_", " "))
+                ax.fill_between(curve.layer / maximum, curve.ci_low, curve.ci_high, alpha=.14)
+            ax.axhline(0, color="black", linewidth=.8)
+            ax.set(title=f"{model}: target {component}", xlabel="Relative layer depth")
+            if col_index == 0:
+                ax.set_ylabel("Causal change in sense-2 margin")
+            if row_index == 0 and col_index == 2:
+                ax.legend(fontsize=8)
+    fig.suptitle("Target-span interventions: residual and MLP carry lexical arbitration signals")
+    fig.tight_layout(); fig.savefig(OUT / "target_component_patching.png", dpi=180)
+    plt.close(fig)
+
+
 if __name__ == "__main__":
-    plot_c(); plot_b(); plot_a()
+    plot_c(); plot_b(); plot_a(); plot_target_components()

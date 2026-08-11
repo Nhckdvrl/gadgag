@@ -31,6 +31,16 @@ false-friend-specific language-convention effect. Cross-turn carryover is not
 retained as a standalone topic because its homograph-specific increment is less
 stable under a changed prime role.
 
+A subsequent formal-gate audit adds two non-CJK replications: masked natural
+context beats marker-matched unrelated context in **48/48** Indonesian–Malay /
+Indonesian–Tagalog model × wrapper × normalization variants. Target-span
+interventions replicate causal semantic and language effects in both Qwen3-8B
+and Gemma-3-12B, chiefly in the residual stream and MLP output; attention-only
+effects are not stable. The audit also finds that the current control pool has
+**zero pairs** under exact bilingual broad-POS matching plus a 1-SD caliper on
+every frequency/tokenization/gloss/difficulty covariate. This is a failed
+common-support gate, not evidence that matching succeeded.
+
 ![Three-candidate causal result](figures/candidate_a_causal.png)
 
 ## Construct-killer result
@@ -126,6 +136,7 @@ aggregate CSVs, reports and figures are included.
 ## Read next
 
 - [`docs/ADVISOR_BRIEF_20260812_ZH.md`](docs/ADVISOR_BRIEF_20260812_ZH.md): short advisor briefing
+- [`docs/FINAL_GATE_AUDIT_20260811_ZH.md`](docs/FINAL_GATE_AUDIT_20260811_ZH.md): formal three-gate audit and advisor-ready verdict
 - [`docs/THREE_CANDIDATE_VERDICT_ZH.md`](docs/THREE_CANDIDATE_VERDICT_ZH.md): full A/B/C evidence and kill decisions
 - [`docs/MENTOR_BRIEF_ZH.md`](docs/MENTOR_BRIEF_ZH.md): concise advisor briefing
 - [`docs/CONSTRUCT_AUDIT_ZH.md`](docs/CONSTRUCT_AUDIT_ZH.md): feedback-by-feedback audit

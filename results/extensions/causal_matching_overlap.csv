@@ -1,0 +1,13 @@
+model,control,caliper_sd_each_covariate,exact_pos_pairs,available_false,available_control,language_excess,ci_low,ci_high
+qwen3_8b,true_friend,1.0,0,20,20,,,
+qwen3_8b,true_friend,1.5,2,20,20,17.627348601419186,7.421016034359582,27.83368116847879
+qwen3_8b,true_friend,2.0,9,20,20,6.497203161230453,0.0456203902623,13.68808296578713
+qwen3_8b,translation_control,1.0,0,20,16,,,
+qwen3_8b,translation_control,1.5,1,20,16,,,
+qwen3_8b,translation_control,2.0,6,20,16,8.631256880238652,0.5522371002783378,17.92552736401558
+gemma3_12b,true_friend,1.0,0,20,20,,,
+gemma3_12b,true_friend,1.5,0,20,20,,,
+gemma3_12b,true_friend,2.0,8,20,20,14.226217782124877,8.290934319918353,20.62780867516994
+gemma3_12b,translation_control,1.0,0,20,16,,,
+gemma3_12b,translation_control,1.5,0,20,16,,,
+gemma3_12b,translation_control,2.0,8,20,16,17.90045601626237,9.583471926425894,26.76349308453499
