@@ -1,93 +1,125 @@
-# Right Direction, Wrong Answer
+# Right Direction, Wrong Answer?
 
-This repository is the complete record of a kill-or-go pilot on cross-lingual
-homographs. The proposed **cross-lingual semantic overwrite** hypothesis did
-not survive causal controls. The experiments instead reveal a broader and
-actionable problem: current absolute-answer homograph evaluations conflate
-context-conditioned sense discrimination with surface/candidate priors.
+This repository records two successive kill-or-go pilots on cross-lingual
+homographs.
 
-The resulting research direction is:
+1. **Semantic overwrite is KILLED.** Its apparent adaptation effect is explained
+   by surface/candidate exposure and disappears after the appropriate control.
+2. **Auditing cross-lingual sense disambiguation beyond accuracy is GO.** A new
+   exact-form 2×2 experiment separates sentence-language convention from
+   sense-bearing context and shows that both contribute to the score movement
+   hidden behind many absolute errors.
 
-> **Causally Decomposing Cross-Lingual Lexical Interference into
-> Language-Conditioned Sense Sensitivity and Surface Priors**
+The recommended working title is:
 
-It is not another static model leaderboard. It is a construct-validity and
-causal-evaluation project: paired bilingual counterfactuals factor a model's
-score into (i) a context-sensitive *sense switch* and (ii) a context-independent
-candidate prior, while controlled adaptation interventions test which component
-actually changes.
+> **Right Direction, Wrong Answer? Auditing Cross-Lingual Sense
+> Disambiguation Beyond Accuracy**
 
-## Pilot verdict
+The scientific question is broader than another false-friend leaderboard:
 
-- **KILL** the literal semantic-overwrite claim. Chinese-only adaptation caused
-  a targeted raw margin change at dose 32, but a neutral repetition control was
-  even larger, Japanese-gloss evaluation was non-significant, and a
-  context-lift correction removed the apparent cross-lingual effect.
-- **KILL** collision-aware replay as currently formulated. It did not beat an
-  equal-budget random replay baseline.
-- **GO** on the paired sense-switch audit. Across Chinese–Japanese and
-  English–German, Qwen2.5-7B, Qwen3-8B, Gemma-3-4B and Gemma-3-12B often failed
-  the strict two-sided answer criterion while still shifting toward the correct
-  sense when the language context changed.
+> When a multilingual model answers a lexical-semantic item incorrectly, did it
+> fail to extract contextual evidence, or did correct evidence fail to overcome
+> a language- and answer-dependent decision bias?
 
-See [the Chinese executive report](docs/EXECUTIVE_SUMMARY_ZH.md),
-[experiment record](docs/EXPERIMENTS.md), [literature audit](docs/LITERATURE_REVIEW.md),
-and [research proposal](docs/RESEARCH_PROPOSAL.md).
+## Construct-killer result
 
-## Core metric
-
-For identical candidate senses \(y_1,y_2\) and paired contexts in languages
-\(L_1,L_2\):
+StingrayBench already contains four human-authored cells for each false friend:
+`L1×sense1`, `L2×sense1`, `L1×sense2`, and `L2×sense2`. The old pilot used only
+the two aligned diagonal cells. The new audit uses all four and estimates:
 
 ```text
-m1 = log P(y2 | x_L1) - log P(y1 | x_L1)
-m2 = log P(y2 | x_L2) - log P(y1 | x_L2)
-
-sense_switch = m2 - m1
-candidate_prior = (m2 + m1) / 2
+semantic-context effect = [(m12 + m22) - (m11 + m21)] / 2
+language-convention effect = [(m21 + m22) - (m11 + m12)] / 2
+interaction = (m22 - m21) - (m12 - m11)
 ```
 
-`sense_switch > 0` asks whether context moves the model in the correct
-direction. It does **not** replace absolute correctness; reporting both exposes
-whether a failure comes from semantic insensitivity or a stable output prior.
+Here `mLS` is the log-probability margin for sense 2 over sense 1 under language
+`L` and sense-bearing context `S`. The experiment keeps only NFKC-identical
+forms that also occur literally in all four contexts: 27 ZH–JA and 33 ID–TL
+false friends. This stricter context-occurrence check removes composite forms,
+inflections and rows where a translated synonym replaced the listed target.
+
+Across four Qwen/Gemma checkpoints, plain and official chat formatting, mean and
+sum log likelihood, and three answer wrappers:
+
+- full-context semantic effect: **92/96 variants with 95% CI > 0**;
+- official chat-template subset: **48/48** (plain-text stress test: 44/48);
+- target-masked semantic context: **91/96**;
+- language-only control: **4/96 positive and 2/96 negative**;
+- marker-matched shuffled-context control: **1/96 positive and 3/96 negative**;
+- independently written lexical gloss variants: **48/48 aggregate CIs > 0**.
+
+An ecological check uses only Stingray's two natural correct-use cells, never
+the translated/replaced conflict cells. Masked natural context beats a
+marker-matched unrelated context in **82/96** variants (**46/48** with official
+chat templates). In contrast, natural context beats an explicit
+language-plus-target cue in only **36/96**, with 16 significant reversals. The
+safe conclusion is therefore protocol-dependent evidence use—not that context
+always dominates language identity.
+
+![Natural-context controls](figures/natural_context_gate.png)
+
+Thus the diagonal switch is not merely language identification. It contains a
+replicable sense-bearing-context component and a language-convention component.
+Absolute two-direction correctness can nevertheless remain as low as 3–46%,
+depending on model and prompting.
+
+![Factorial construct controls](figures/factorial_construct_controls.png)
+
+## Terminology correction
+
+The previous `(m1+m2)/2` quantity is now called the **diagonal margin midpoint**,
+not a candidate prior. A coordinate midpoint is descriptive and does not
+causally identify a prior. Decision bias is estimated separately with
+content-free prompts and repeated answer formulations.
+
+Content-free calibration changes the average both-directions accuracy from
+31.9% to 46.5% on ZH–JA and from 41.0% to 55.2% on ID–TL. This is evidence that
+absolute conclusions depend materially on the decision layer; calibration
+itself is an existing baseline, not our novelty claim.
 
 ## Reproduction
 
 The pilot used Python 3.12, PyTorch 2.8, Transformers 4.57, PEFT 0.19 and A100
-GPUs. Install the dependencies in `requirements.txt`, then obtain the source
-datasets (their licenses apply):
+GPUs. On this cluster `/usr/bin/python` is Python 2, so use an explicit Python 3
+environment. For example:
+
+```bash
+uv venv .venv --python 3.12
+uv pip install --python .venv/bin/python -r requirements.txt
+```
+
+Then obtain datasets under their own licenses:
 
 ```bash
 git clone https://github.com/0017-alt/Doppelganger-JC external/Doppelganger-JC
 git clone https://huggingface.co/datasets/StingrayBench/StingrayBench external/StingrayBench
-python src/prepare_data.py
+.venv/bin/python src/prepare_data.py
 ```
 
-Primary crossover experiment:
+Example construct audit:
 
 ```bash
-CUDA_VISIBLE_DEVICES=0 python src/run_pilot.py --fold 0
-CUDA_VISIBLE_DEVICES=1 python src/run_pilot.py --fold 1
-python src/analyze.py
+CUDA_VISIBLE_DEVICES=0 .venv/bin/python src/evaluate_factorial.py \
+  --pair zh_ja --model Qwen/Qwen2.5-7B-Instruct --tag qwen25_7b \
+  --data-root external/StingrayBench/data --prompt-mode chat --batch-size 32
+.venv/bin/python src/analyze_factorial.py
+.venv/bin/python src/validate_construct.py
 ```
 
-The scripts in `src/` reproduce every extension and construct-validity check.
-The public repository intentionally contains aggregate results rather than
-redistributing source dataset text or multi-gigabyte adapters.
+Raw licensed text, model weights, adapters and per-item result files are not
+redistributed. Deterministic code, manually inspectable gloss variants,
+aggregate CSVs, reports and figures are included.
 
-## Repository map
+## Read next
 
-- `src/`: data preparation, interventions, evaluations, and analyses
-- `results/`: aggregate CSV files used in the reports
-- `reports/`: machine-generated pilot tables and decisions
-- `docs/`: interpretation, literature audit, limitations, and proposed study
-- `figures/`: figures generated from aggregate results
+- [`docs/MENTOR_BRIEF_ZH.md`](docs/MENTOR_BRIEF_ZH.md): concise advisor briefing
+- [`docs/CONSTRUCT_AUDIT_ZH.md`](docs/CONSTRUCT_AUDIT_ZH.md): feedback-by-feedback audit
+- [`docs/RESEARCH_PROPOSAL.md`](docs/RESEARCH_PROPOSAL.md): revised six-month plan
+- [`docs/EXPERIMENTS.md`](docs/EXPERIMENTS.md): complete experiment record
+- [`docs/LITERATURE_REVIEW.md`](docs/LITERATURE_REVIEW.md): novelty boundaries
 
-## Scope and honesty
-
-This is a rigorous pilot, not a completed conference paper. The causal
-adaptation study uses 50 Japanese–Chinese false friends and two crossover folds;
-the paired audit uses 57 Chinese–Japanese and 49 English–German items. The
-finding is replicated across four open model checkpoints, but the full paper
-still needs preregistered scaling, human validation, more language pairs, and
-closed-model probability-compatible evaluation.
+This remains a pilot, not a finished paper. Independent bilingual validation of
+the new glosses, natural non-contrastive contexts, additional datasets, and a
+hierarchical measurement model remain mandatory before a strong publication
+claim.

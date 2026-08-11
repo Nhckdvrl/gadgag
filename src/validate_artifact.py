@@ -20,7 +20,7 @@ def main():
     causal = pd.read_csv(ROOT / "results/extensions/doppel_switch_causal.csv")
     did = causal[(causal.condition == "conflict_minus_neutral") & (causal.metric == "dswitch")].iloc[0]
     assert did.ci_low < 0 < did.ci_high, "dynamic difference-in-differences no longer inconclusive"
-    print("artifact validation passed: old hypothesis KILL, paired audit conditional GO")
+    print("legacy artifact validation passed: old hypothesis KILL, diagonal phenomenon retained")
 
 
 if __name__ == "__main__":

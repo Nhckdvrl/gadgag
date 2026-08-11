@@ -1,0 +1,26 @@
+{
+  "date": "2026-08-11",
+  "seed": 20260811,
+  "models": ["qwen25_7b", "qwen3_8b", "gemma3_4b", "gemma3_12b"],
+  "exact_form_pairs": {"zh_ja": 27, "id_tl": 33},
+  "selection": "NFKC-identical listed form and literal/standalone target occurrence in all four contexts",
+  "prompt_modes": ["plain", "chat"],
+  "normalizations": ["mean_token_logp", "sum_sequence_logp"],
+  "answer_wrappers": ["bare", "definition", "refers"],
+  "factorial_batch_size": 32,
+  "shuffled_marker": "[TARGET] (matched to masked condition)",
+  "batch_stress": [
+    "qwen25_7b/zh_ja/chat: batch 8 vs 32",
+    "gemma3_12b/id_tl/plain: batch 8 vs 32"
+  ],
+  "factorial_result_files": 16,
+  "factorial_rows": 23040,
+  "content_free_files": 16,
+  "content_free_rows": 1440,
+  "lexical_gloss_files": 8,
+  "lexical_gloss_rows": 2592,
+  "xlwic_files": 12,
+  "xlwic_rows": 2400,
+  "raw_item_outputs_published": false,
+  "aggregate_validation": "src/validate_construct.py"
+}

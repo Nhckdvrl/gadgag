@@ -1,0 +1,17 @@
+model,prompt_mode,normalization,all_three_positive
+gemma3_12b,chat,mean,0.5925925925925926
+gemma3_12b,chat,sum,0.5925925925925926
+gemma3_12b,plain,mean,0.3333333333333333
+gemma3_12b,plain,sum,0.2222222222222222
+gemma3_4b,chat,mean,0.6296296296296297
+gemma3_4b,chat,sum,0.5925925925925926
+gemma3_4b,plain,mean,0.7037037037037037
+gemma3_4b,plain,sum,0.6296296296296297
+qwen25_7b,chat,mean,0.5185185185185185
+qwen25_7b,chat,sum,0.5185185185185185
+qwen25_7b,plain,mean,0.7037037037037037
+qwen25_7b,plain,sum,0.6296296296296297
+qwen3_8b,chat,mean,0.6666666666666666
+qwen3_8b,chat,sum,0.6666666666666666
+qwen3_8b,plain,mean,0.7777777777777778
+qwen3_8b,plain,sum,0.8148148148148148
