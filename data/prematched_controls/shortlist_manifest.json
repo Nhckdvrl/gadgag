@@ -1,0 +1,25 @@
+{
+  "design_stage": "outcome-blind lexical shortlist",
+  "false_total": 27,
+  "false_common_pos_support": 27,
+  "excluded_false_ids": [],
+  "neighbors_per_false_per_group": 100,
+  "covariates": [
+    "freq_l1",
+    "freq_l2",
+    "freq_ratio",
+    "char_l1",
+    "char_l2",
+    "gloss_tokens",
+    "tok1_l1",
+    "tok1_l2",
+    "tok2_l1",
+    "tok2_l2"
+  ],
+  "target_models_read": false,
+  "rows": 5138,
+  "unique_controls": {
+    "translation_control": 1552,
+    "true_friend": 1007
+  }
+}

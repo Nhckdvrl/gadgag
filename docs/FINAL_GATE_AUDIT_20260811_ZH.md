@@ -62,7 +62,7 @@ PYTHONPATH=src .venv/bin/python src/prepare_bilingual_annotation.py \
 
 ## Gate 3a：frequency/POS/difficulty 严格匹配
 
-状态：**当前控制池未通过 common-support Gate。**
+状态：**旧控制池未通过 common-support Gate；新的 outcome-blind pre-matching 计算 Gate 已通过，人工效度待完成。**
 
 协变量包含中日 `wordfreq`、两语言频率差、token 数、gloss 长度/长度差、原始 donor difficulty；POS 分别由 jieba 与 fugashi/UniDic 提取。完整 Hungarian assignment 后，false-friend language excess 在 Qwen3 与 Gemma-12B、相对 true-friend 与 different-form translation controls 均为正且 bootstrap CI 不跨 0。
 
@@ -72,7 +72,7 @@ PYTHONPATH=src .venv/bin/python src/prepare_bilingual_annotation.py \
 
 > 现有 20 false friends 与 Stingray common-word controls 不在足够的共同支持域；当前数据无法识别严格 matched 的 false-friend excess。
 
-正式实验必须反向建集：先以 false friend 的 POS、频率、tokenization、gloss difficulty 为目标，从更大词表中寻找 controls，再写自然 crossed contexts；先冻结 matching，再跑模型。若新控制集下 excess 消失，删除 collision-specific mechanism 主张，只保留行为分解 B。
+该要求已经执行：从 JMdict、CC-CEDICT 与 Tatoeba 构造 11,000 个带双语自然语境候选，在 target outcomes 未读取时用 joint cardinality matching 同时匹配两类 controls。结果保留 24/27 false friends、每类 24 controls，所有预注册协变量最大 `|SMD|` 为 0.0872 / 0.0972。为处理人工剔除，又冻结每类 96 个的 4× validation reservoir，仍满足 `|SMD| < .10`。两位双语者必须验证语义、自然度、POS 与 confounds；只有双人均通过的 controls 才重新匹配。若人工验证后少于 20 组、平衡失败或 target excess 消失，删除 collision-specific mechanism 主张，只保留行为分解 B。完整交接见 `FINAL_MEASUREMENT_HANDOFF_ZH.md`。
 
 ## Gate 3b：target-token 与 attention/MLP 因果干预
 

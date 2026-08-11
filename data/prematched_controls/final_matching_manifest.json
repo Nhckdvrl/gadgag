@@ -1,0 +1,39 @@
+{
+  "status": "frozen_before_target_outcomes",
+  "false_available": 27,
+  "false_items": 24,
+  "excluded_false_ids": [
+    "zh_ja_012",
+    "zh_ja_016",
+    "zh_ja_053"
+  ],
+  "controls_per_group": {
+    "translation_control": 24,
+    "true_friend": 24
+  },
+  "exact_contextual_pos": true,
+  "smd_bound": 0.1,
+  "dispersion_bound_squared_z_mean": 0.25,
+  "unique_forms_required": true,
+  "reference_model": "Qwen/Qwen2.5-7B-Instruct",
+  "target_models_read": false,
+  "human_validation_complete": false,
+  "minimum_false_items": 20,
+  "covariates": [
+    "freq_l1",
+    "freq_l2",
+    "freq_ratio",
+    "char_l1",
+    "char_l2",
+    "gloss_tokens",
+    "tok1_l1",
+    "tok1_l2",
+    "tok2_l1",
+    "tok2_l2",
+    "reference_difficulty"
+  ],
+  "max_abs_smd": {
+    "translation_control": 0.09716809016974969,
+    "true_friend": 0.08722091538876388
+  }
+}

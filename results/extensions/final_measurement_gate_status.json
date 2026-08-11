@@ -1,0 +1,24 @@
+{
+  "as_of": "2026-08-11",
+  "overall": "BLOCKED_ON_REAL_BILINGUAL_ANNOTATION",
+  "topic_decision": "GO",
+  "behavioral_claim_B": "GO",
+  "doppel_human_validation": {
+    "status": "READY_NOT_COMPLETED",
+    "rows_per_annotator": 708,
+    "annotators_required": 2
+  },
+  "prematched_control_design": {
+    "status": "COMPUTATIONAL_GATE_PASSED_HUMAN_VALIDITY_PENDING",
+    "false_friends": 24,
+    "controls_per_group": 24,
+    "validation_candidates_per_group": 96,
+    "maximum_abs_smd_final": {
+      "true_friend": 0.08722091538876388,
+      "translation_control": 0.09716809016974969
+    },
+    "target_model_outcomes_read": false
+  },
+  "confirmatory_collision_specific_analysis": "LOCKED",
+  "unlock_condition": "Two complete independent bilingual annotation sets, reliability gates, human-filtered rematching with at least 20 false friends and max |SMD| <= 0.10"
+}

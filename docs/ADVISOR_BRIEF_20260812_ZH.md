@@ -1,5 +1,7 @@
 # 给导师的短汇报（2026-08-12）
 
+> 2026-08-11 最终设计更新：旧 controls 的 common-support 失败已经用 outcome-blind、target-first 的 cardinality matching 修复。新候选池含 11,000 个双语自然语境候选；在不读取 target-model outcomes 的条件下保留 24/27 false friends，并为 true-friend / different-form translation 各冻结 24 个 controls，所有协变量 `|SMD| < .10`。另冻结每类 96 个候选供双语盲审后替换。计算 gate 已通过，真实人工 gate 仍未完成，详见 `FINAL_MEASUREMENT_HANDOFF_ZH.md`。
+
 ## 这周做了什么
 
 我把 cross-lingual homograph 剩余的三个候选全部做了 kill-or-go pilot，并继续执行了三道 formal gate。使用 4 个 Qwen/Gemma 模型、日中及两个非 CJK 语言对、Doppelganger-JC 的 354 个双向自然上下文，以及 true cognate / different-form translation / English polysemy controls。所有判断使用 candidate log-probability margin 和 item-level bootstrap，不用挑案例。
@@ -18,7 +20,7 @@
 
 ## 我建议确定的题目
 
-> **When Context and Language Disagree: Causal Decomposition of Cross-Lingual Lexical Arbitration**
+> **When Context and Language Disagree: Disentangling Cross-Lingual Lexical Arbitration in Multilingual LLMs**
 
 日语：
 
@@ -46,12 +48,12 @@ Cross-turn carryover 在默认协议下有明显 sense-specific persistence，la
 
 ## 当前硬限制与需要导师判断的点
 
-自动设施已经准备好 354 项 × 双方向 × 两位标注者的盲化标注包，但人工双语验收不能由模型替代。另一个重要负结果是：现有 control pool 在“双语 POS exact + 每个 frequency/tokenization/gloss/difficulty 协变量 1 SD caliper”下为 **0 个可匹配对**；宽松 assignment 虽仍显著，但不能叫严格控制后成立。正式研究必须先按 false friend 反向构建 controls。
+自动设施已经准备好 354 项 × 双方向 × 两位标注者的盲化标注包，但人工双语验收不能由模型替代。旧 control pool 在“双语 POS exact + 每个 frequency/tokenization/gloss/difficulty 协变量 1 SD caliper”下为 **0 个可匹配对**；这个负结果没有被隐藏。现在已经按 false friend 反向构建并冻结严格平衡 controls，但词义/语境有效性必须由两位双语者盲审。人工通过后仍不足 20 组或 target causal excess 消失，就删除 collision-specific mechanism。
 
 我希望导师主要判断：
 
 1. “benchmark construct decomposition + causal arbitration”是否足够形成一个统一题目；
 2. 是否可以立刻组织两名中日双语者完成 708 行/人的 blind validation；
-3. 是否接受先构建预匹配 control set，matching 失败就删除 collision-specific mechanism claim；mitigation 只在前述 Gate 通过后再做。
+3. 是否接受“人工通过后不足 20 组或 confirmatory excess 消失即删掉 collision-specific mechanism”；mitigation 只在前述 Gate 通过后再做。
 
 完整数字、判死刑标准和 closest-work 边界见 `docs/FINAL_GATE_AUDIT_20260811_ZH.md`。

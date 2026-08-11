@@ -1,0 +1,17 @@
+{
+  "status": "frozen_for_blind_human_validation",
+  "ratio": 4,
+  "items_per_group": {
+    "translation_control": 96,
+    "true_friend": 96
+  },
+  "smd_bound": 0.1,
+  "exact_contextual_pos": true,
+  "unique_forms_required": true,
+  "target_models_read": false,
+  "reference_model": "Qwen/Qwen2.5-7B-Instruct",
+  "max_abs_smd": {
+    "translation_control": 0.09955454600499287,
+    "true_friend": 0.0999356796976766
+  }
+}

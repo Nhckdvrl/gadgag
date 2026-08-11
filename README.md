@@ -11,10 +11,13 @@ homographs, including a completed three-candidate audit on 2026-08-11.
    hidden behind many absolute errors.
 
 After independent natural-context validation, cross-turn robustness tests and
-causal activation patching, the recommended working title is now:
+causal activation patching, the conservative working title is now:
 
-> **When Context and Language Disagree: Causal Decomposition of
-> Cross-Lingual Lexical Arbitration**
+> **When Context and Language Disagree: Disentangling Cross-Lingual Lexical
+> Arbitration in Multilingual LLMs**
+
+`Causal Decomposition` is reserved for the paper title only if the bilingual
+measurement and human-validated pre-matched-control gates pass.
 
 The scientific question is broader than another false-friend leaderboard:
 
@@ -36,10 +39,19 @@ context beats marker-matched unrelated context in **48/48** Indonesian–Malay /
 Indonesian–Tagalog model × wrapper × normalization variants. Target-span
 interventions replicate causal semantic and language effects in both Qwen3-8B
 and Gemma-3-12B, chiefly in the residual stream and MLP output; attention-only
-effects are not stable. The audit also finds that the current control pool has
+effects are not stable. The audit also found that the original control pool had
 **zero pairs** under exact bilingual broad-POS matching plus a 1-SD caliper on
 every frequency/tokenization/gloss/difficulty covariate. This is a failed
 common-support gate, not evidence that matching succeeded.
+
+The final design-stage repair constructs controls from JMdict, CC-CEDICT and
+natural Tatoeba contexts before reading target-model outcomes. Joint cardinality
+matching retains 24/27 false friends and 24 controls in each of the true-friend
+and different-form translation groups; every preregistered covariate has
+`|SMD| < .10` (max .0872/.0972). A 4× human-validation reservoir (96 candidates
+per control group) is frozen because dictionary overlap does not establish
+sense validity. Confirmatory target-model analysis is deliberately locked until
+two bilingual annotators validate both Doppel and control packets.
 
 ![Three-candidate causal result](figures/candidate_a_causal.png)
 
@@ -136,6 +148,7 @@ aggregate CSVs, reports and figures are included.
 ## Read next
 
 - [`docs/ADVISOR_BRIEF_20260812_ZH.md`](docs/ADVISOR_BRIEF_20260812_ZH.md): short advisor briefing
+- [`docs/FINAL_MEASUREMENT_HANDOFF_ZH.md`](docs/FINAL_MEASUREMENT_HANDOFF_ZH.md): frozen final gates, results, and exact handoff
 - [`docs/FINAL_GATE_AUDIT_20260811_ZH.md`](docs/FINAL_GATE_AUDIT_20260811_ZH.md): formal three-gate audit and advisor-ready verdict
 - [`docs/THREE_CANDIDATE_VERDICT_ZH.md`](docs/THREE_CANDIDATE_VERDICT_ZH.md): full A/B/C evidence and kill decisions
 - [`docs/MENTOR_BRIEF_ZH.md`](docs/MENTOR_BRIEF_ZH.md): concise advisor briefing

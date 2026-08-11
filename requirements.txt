@@ -15,3 +15,4 @@ fugashi>=1.5,<1.6
 unidic-lite>=1.0,<1.1
 mecab-python3>=1.0,<1.1
 ipadic>=1.0,<1.1
+pyahocorasick>=2.2,<2.3

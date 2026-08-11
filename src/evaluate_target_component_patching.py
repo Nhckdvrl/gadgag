@@ -6,15 +6,70 @@ import argparse
 import json
 from pathlib import Path
 
+import pandas as pd
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from evaluate_causal_gating import (build_donors, chat_prefix, layer_list, messages,
-                                    prepare_local, score_requests)
+                                    monolingual_polysemy, prepare_local, score_requests)
 from scoring_v2 import Score
+from stingray_factorial import LANGUAGES, load_pair
 
 ROOT = Path(__file__).resolve().parents[1]
 COMPONENTS = ("residual", "attention", "mlp")
+
+
+def build_prematched_donors(data_root: Path, controls_path: Path) -> list[dict]:
+    """Use only the human-filtered, frozen controls and their retained FF scope."""
+    controls = pd.read_csv(controls_path)
+    required = {"group", "false_id", "control_id", "word_l1", "word_l2",
+                "context_l1", "context_l2", "meaning"}
+    missing = required - set(controls.columns)
+    if missing:
+        raise ValueError(f"{controls_path}: missing columns {sorted(missing)}")
+    if controls.groupby("group").size().nunique() != 1:
+        raise ValueError("both matched-control groups must have equal size")
+    names = LANGUAGES["zh_ja"]
+    false_ids = set(controls.false_id.astype(str))
+    false = {item["id"]: item for item in load_pair(data_root, "zh_ja", exact_only=True)}
+    if false_ids - set(false):
+        raise ValueError(f"matched false IDs absent from Stingray: {sorted(false_ids-set(false))}")
+    donors = []
+    for item_id in sorted(false_ids):
+        item = false[item_id]
+        for language in (1, 2):
+            for sense in (1, 2):
+                donors.append({"id": item["id"], "group": "false_friend",
+                    "language": language, "sense": sense, "word": item["word"],
+                    "neutral_word": item["word"], "donor": item[f"L{language}_S{sense}"],
+                    "neutral_language": names[0], "meaning1": item["meaning_l1"],
+                    "meaning2": item["meaning_l2"],
+                    "language_name": names[language - 1]})
+    for group, frame in controls.groupby("group", sort=True):
+        frame = frame.sort_values("control_id").reset_index(drop=True)
+        meanings = frame.meaning.tolist()
+        for index, row in frame.iterrows():
+            foil = next((meanings[(index + offset) % len(meanings)]
+                         for offset in range(1, len(meanings))
+                         if meanings[(index + offset) % len(meanings)] != row.meaning), None)
+            if foil is None:
+                raise ValueError(f"{group}: cannot construct a distinct frozen foil")
+            for language in (1, 2):
+                donors.append({"id": str(row.control_id), "group": group,
+                    "language": language, "sense": 1,
+                    "word": row[f"word_l{language}"],
+                    "donor": row[f"context_l{language}"],
+                    "neutral_word": row.word_l1, "neutral_language": names[0],
+                    "language_name": names[language - 1],
+                    "meaning1": row.meaning, "meaning2": foil})
+    for item in monolingual_polysemy(len(false_ids)):
+        for sense in (1, 2):
+            donors.append({"id": item["id"], "group": "monolingual_polysemy",
+                "language": 1, "sense": sense, "word": item["word"],
+                "neutral_word": item["word"], "donor": item[f"S{sense}"],
+                "neutral_language": "English", "language_name": "English",
+                "meaning1": item["meaning_l1"], "meaning2": item["meaning_l2"]})
+    return donors
 
 
 def rendered_target_positions(tokenizer, value, target: str) -> tuple[list[int], list[int]]:
@@ -139,9 +194,23 @@ def main():
     parser.add_argument("--layer-stride", type=int, default=4)
     parser.add_argument("--batch-size", type=int, default=8)
     parser.add_argument("--max-donors", type=int)
+    parser.add_argument("--prematched-controls", type=Path,
+                        help="Human-filtered private_final_controls.csv")
+    parser.add_argument("--gate-status", type=Path,
+                        help="Output of check_final_measurement_gates.py")
     parser.add_argument("--output-path", type=Path)
     args = parser.parse_args()
-    donors = build_donors(args.data_root, args.pair, args.items_per_group)
+    if bool(args.prematched_controls) != bool(args.gate_status):
+        parser.error("--prematched-controls and --gate-status must be supplied together")
+    if args.prematched_controls:
+        gate = json.loads(args.gate_status.read_text())
+        if gate.get("target_confirmatory_analysis_allowed") is not True:
+            raise RuntimeError("confirmatory target analysis is LOCKED by measurement gates")
+        if args.pair != "zh_ja":
+            raise ValueError("the frozen pre-matched design currently covers zh_ja only")
+        donors = build_prematched_donors(args.data_root, args.prematched_controls)
+    else:
+        donors = build_donors(args.data_root, args.pair, args.items_per_group)
     if args.max_donors:
         donors = donors[:args.max_donors]
     tokenizer = AutoTokenizer.from_pretrained(args.model, local_files_only=True)
