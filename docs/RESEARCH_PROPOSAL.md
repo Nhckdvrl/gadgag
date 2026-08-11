@@ -1,111 +1,152 @@
-# Proposed research direction
+# Revised research proposal
 
 ## Working title
 
-**Right Direction, Wrong Answer: Causally Decomposing Cross-Lingual Lexical
-Interference into Sense Sensitivity and Surface Priors**
+**Right Direction, Wrong Answer? Auditing Cross-Lingual Sense Disambiguation
+Beyond Accuracy**
 
-The broader “cross-lingual lexical interference” wording is intentional. False
-friends are the main natural test bed, not the only possible endpoint; the
-scientific object is which identifiable component of multilingual lexical
-processing fails under static evaluation and dynamic adaptation.
+Optional subtitle: **A Crossed-Context Analysis of False-Friend Evaluation**.
+
+## Motivation
+
+Recent homograph benchmarks conclude that multilingual LLMs often fail to
+distinguish cross-lingual senses. Their final-task accuracy is important, but it
+does not identify why a model failed. An incorrect decision can reflect no
+contextual evidence, correct but insufficient evidence, a language convention,
+or an answer-dependent decision bias. These mechanisms imply different model
+limitations and different remedies.
+
+False friends provide a clean test bed for a general measurement question:
+when surface form, sentence language, intended sense and output formulation are
+correlated, what capability does benchmark accuracy identify?
 
 ## Research questions
 
-- **RQ1:** How much of apparent cross-lingual homograph failure is explained by
-  context-sensitive semantic discrimination versus stable candidate/language
-  priors?
-- **RQ2:** Which factors—script identity, tokenizer identity, resource ratio,
-  POS, semantic distance and model architecture—change sensitivity and priors
-  differently?
-- **RQ3:** Do model rankings and conclusions from existing benchmarks change
-  after both axes are reported?
-- **RQ4:** Can causally targeted calibration improve absolute resolution without
-  destroying genuine context sensitivity or true-friend transfer?
+- **RQ1:** How much of an aligned L1→L2 score switch comes from surrounding
+  sense-bearing context versus the sentence's language convention?
+- **RQ2:** How often does correct contextual evidence fail to cross the absolute
+  decision boundary, and how much does answer formulation change that boundary?
+- **RQ3:** Which model, tokenization, script, frequency and language-resource
+  factors affect semantic evidence and language-convention evidence differently?
+- **RQ4:** Do existing conclusions about homograph “comprehension” and model
+  ranking change under crossed-context and repeated-gloss measurement?
+- **RQ5:** During language adaptation, is loss concentrated in semantic-context
+  evidence, language convention, or only the decision layer?
 
-## Hypotheses
+## Initial idea: Crossed-Context Audit (XCA)
 
-- H1: Many failures will have positive sense switch but wrong absolute choice,
-  particularly when one language has a strong resource/frequency advantage.
-- H2: Surface-only exposure will primarily move candidate prior; genuinely
-  semantic intervention should change context sensitivity.
-- H3: Unicode/token identity amplifies prior movement more reliably than it
-  reduces context sensitivity.
-- H4: A two-axis audit will reorder at least some model/language-pair conclusions
-  relative to raw accuracy and existing bias metrics.
+For candidate margin `m(L,S,G)`—language `L`, sense-bearing context `S`, and
+gloss formulation `G`—fit the repeated-measure model:
 
-## Full experimental program
+```text
+m = b(item, gloss, model)
+    + beta_semantic * S
+    + beta_language * L
+    + beta_interaction * L*S
+    + random item/model/gloss effects
+```
 
-### Work package 1: Measurement validation
+Report three levels rather than one accuracy:
 
-- Reuse paired false-friend contexts from StingrayBench, Doppelganger-JC and
-  other license-compatible resources.
-- Add candidate paraphrases, reversed order, answer language, transliteration,
-  language-tag removal and matched same-language shuffled contexts.
-- Obtain bilingual human judgments of both absolute sense and relative evidence
-  movement on a stratified subset.
-- Compare raw accuracy, Stingray metrics, contextual calibration,
-  answer-level calibration, MCL-WiC-style similarity and the proposed
-  decomposition.
+1. **Semantic Context Evidence (SCE):** the factorial main effect of the
+   intended surrounding semantics.
+2. **Language Convention Evidence (LCE):** the factorial main effect of sentence
+   language while holding intended semantics constant.
+3. **Decision Resolution:** whether the final candidate margin crosses the
+   correct boundary under repeated glosses; estimate decision baseline with
+   content-free and answer-level calibration.
 
-### Work package 2: Generality
+`Margin midpoint` remains descriptive and must not be called a prior. The
+factorial components are effects under the benchmark's counterfactual
+intervention; they are not claims about hidden neural representations.
 
-- At least four language pairs spanning shared/different scripts and different
-  resource ratios (ZH–JA, EN–DE, ID–MS, ID–TL are immediately available).
-- At least six open and closed model families.
-- Mixed-effects regression with item and model random effects; predictors:
-  Unicode identity, identical token sequence, subword count, POS, semantic
-  mismatch, corpus-frequency ratio and language direction.
+The confirmatory protocol will use official chat templates and a hierarchical
+item/model/gloss analysis. Plain prompting, mean versus sum normalization and
+scoring batch size are robustness specifications, not independent
+replications. Near-zero decisions will receive a numerical-stability flag.
 
-### Work package 3: Causal mechanisms
+## Confirmed pilot evidence
 
-- Continue the crossover intervention with conflict, neutral-surface,
-  paraphrased-meaning, unrelated-word and generic-language controls.
-- Evaluate checkpoints over a preregistered exposure curve.
-- Use layer/module interventions only after the behavioral construct passes all
-  controls.
-- Treat changes in prior and sensitivity as separate outcomes.
+- exact surface occurring in all four contexts: 27 ZH–JA and 33 ID–TL;
+- four checkpoints from Qwen and Gemma;
+- official chat and plain prompts;
+- boundary-faithful full-string scoring;
+- mean/sum likelihood and three wrappers;
+- full semantic effect: 92/96 CIs positive (48/48 with official chat
+  templates; 44/48 in the plain-text stress test);
+- masked semantic context: 91/96;
+- marker-matched shuffled context: 1/96 positive and 3/96 negative;
+- using only natural correct-use cells, masked context beats matched shuffled
+  context in 82/96 specifications (46/48 with official chat), while full
+  context beats an explicit language-plus-target cue in only 36/96;
+- lexical gloss variants: 48/48 aggregate CIs positive;
+- raw absolute accuracy remains far below directional/factorial sensitivity;
+- content-free calibration changes both-direction accuracy by about 14 points.
+- a batch-size 8/32 stress test yields margin correlations above .999 but
+  0.6–1.2% cell-level sign flips; one weak Gemma-3-12B plain aggregate CI changes
+  significance, while all six tested Qwen2.5 chat gates remain positive.
 
-### Work package 4: Method, only if justified
+## Work packages
 
-Compare contextual/answer calibration, a learned prior estimator, and a small
-counterfactual calibration set. The goal is not merely higher accuracy: the
-method must improve absolute resolution while preserving the measured semantic
-sense switch. Collision-aware replay is excluded unless redesigned because its
-pilot failed against random replay.
+### WP1: Measurement validity
 
-## Six-month feasibility
+- independent bilingual review of all gloss variants;
+- natural, non-word-replacement counterfactual contexts;
+- candidate order, answer language, transliteration, chat formatting and
+  free-generation checks;
+- compare XCA with Stingray bias/comprehension, contextual calibration,
+  answer-level calibration, MCL-WiC/XL-WiC and current WSD evaluation.
 
-1. Month 1: license audit, paired schema, preregistration and human protocol.
-2. Month 2: full multi-model/multi-pair behavioral audit.
-3. Month 3: perturbation and calibration baselines; resolve construct threats.
-4. Month 4: controlled adaptation and frequency/tokenization regressions.
-5. Month 5: only then develop the minimal method warranted by results.
-6. Month 6: robustness, human validation, paper and artifact release.
+### WP2: Generality without leaderboard inflation
 
-The compute is moderate: likelihood scoring dominates; training uses small LoRA
-interventions rather than pretraining new 7B models.
+- add language pairs only after WP1 passes;
+- stratify exact versus merely similar form, script, frequency ratio, POS and
+  semantic distance;
+- fit a hierarchical model rather than report dozens of disconnected tables;
+- audit whether published benchmark-level conclusions change.
+
+### WP3: Dynamic intervention
+
+- preregister conflict, neutral-surface, paraphrased-meaning and unrelated-word
+  adaptation controls;
+- treat SCE, LCE and decision baseline as separate outcomes;
+- replicate the exploratory conflict-minus-neutral sensitivity result with more
+  items/seeds before any mechanism claim.
+
+### WP4: Method, only if warranted
+
+Possible method: a small counterfactual calibration set that estimates decision
+baseline across glosses while preserving SCE. Compare it to generic contextual
+and answer-level calibration. Success requires better absolute resolution with
+unchanged or improved semantic-context evidence—not only higher accuracy.
+
+## Six-month schedule
+
+1. Month 1: bilingual annotation and preregistered measurement protocol.
+2. Month 2: natural counterfactual set and reliability analysis.
+3. Month 3: multi-dataset/model audit and hierarchical inference.
+4. Month 4: controlled adaptation mechanism study.
+5. Month 5: minimal calibration/method experiment if justified.
+6. Month 6: robustness, artifact and paper.
 
 ## Kill criteria
 
-Abandon the direction rather than narrow it further if any two hold:
+Stop rather than narrow the topic if two occur:
 
-- sense-switch/accuracy separation fails to replicate across four pairs and six
-  models;
-- the metric is unstable under valid paraphrases or option permutations;
-- human judgments do not support the model-side decomposition;
-- calibrated results do not alter any substantive scientific diagnosis;
-- language ID alone explains all variance and lexical/context information adds
-  none;
-- adjacent work is found that already performs the same paired causal audit.
+- natural non-replacement contexts do not reproduce SCE;
+- independently validated glosses yield unstable aggregate effect direction;
+- crossed-context analysis does not change any benchmark mechanism conclusion;
+- language convention alone explains results after better controls;
+- results reduce completely to existing contextual/answer calibration;
+- a direct prior paper is found with the same factorial audit and causal scope.
 
-## Contribution claim that is safe today
+## Safe current contribution claim
 
-“We identify and causally validate a construct confound in cross-lingual lexical
-evaluation, introduce a paired diagnostic that separately reports contextual
-sense sensitivity and surface/candidate prior, and show that current absolute
-errors can mask correct directional semantic evidence.”
+“We show that absolute cross-lingual false-friend errors conflate separable
+language-convention, sense-bearing-context and decision components. A
+crossed-context audit reveals robust contextual evidence hidden by low strict
+accuracy, while repeated gloss and calibration experiments expose substantial
+decision instability.”
 
-Do **not** claim that LLMs actually understand the words, that semantic overwrite
-exists, that calibration is new, or that the literature search proves absolute
-worldwide novelty.
+Do not claim hidden semantic representations, causal candidate priors, semantic
+overwrite, or that directional evidence is equivalent to correct understanding.

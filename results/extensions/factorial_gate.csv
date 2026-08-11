@@ -1,0 +1,17 @@
+pair,model,prompt_mode,n_variants,all_full_semantic_ci_positive
+id_tl,gemma3_12b,chat,6,True
+id_tl,gemma3_12b,plain,6,False
+id_tl,gemma3_4b,chat,6,True
+id_tl,gemma3_4b,plain,6,True
+id_tl,qwen25_7b,chat,6,True
+id_tl,qwen25_7b,plain,6,True
+id_tl,qwen3_8b,chat,6,True
+id_tl,qwen3_8b,plain,6,True
+zh_ja,gemma3_12b,chat,6,True
+zh_ja,gemma3_12b,plain,6,False
+zh_ja,gemma3_4b,chat,6,True
+zh_ja,gemma3_4b,plain,6,True
+zh_ja,qwen25_7b,chat,6,True
+zh_ja,qwen25_7b,plain,6,True
+zh_ja,qwen3_8b,chat,6,True
+zh_ja,qwen3_8b,plain,6,True

@@ -1,5 +1,99 @@
 # Experiment record
 
+## 2026-08-11 construct-killer extension
+
+After external review, the paired diagonal experiment was not accepted as pure
+semantic sensitivity: moving from L1 to L2 also changed sentence language and,
+for similar-form items, target form. A second pilot therefore used all four
+Stingray cells in a language × intended-context factorial and retained only
+NFKC-identical target forms that occur in all four evaluated contexts.
+
+### Implementation corrections
+
+- `scoring_v2.py` tokenizes the complete plain-text string and requires a
+  prefix-stable answer boundary. Chat scoring uses each tokenizer's official
+  generation template.
+- Both mean token log likelihood and summed sequence log likelihood are kept.
+- The validated loader asserts paired meanings, task directions and the four
+  usage-validity labels instead of trusting adjacent row order.
+- The old coordinate average is renamed `margin midpoint`; content-free prompts
+  estimate a separate decision baseline.
+
+### Factorial sample
+
+- ZH–JA: 27 strict exact-context forms;
+- ID–TL: 33 strict exact-context forms;
+- Qwen2.5-7B, Qwen3-8B, Gemma-3-4B, Gemma-3-12B;
+- plain and chat prompts;
+- bare, definition and referential answer wrappers;
+- mean and sum scoring.
+
+This yields 96 confirmatory-style variants for each context condition.
+
+### Construct controls
+
+| condition | CI > 0 | interpretation |
+|---|---:|---|
+| full | 92/96 | language and semantic context both present; official chat 48/48 |
+| masked | 91/96 | target removed; surrounding semantics retained |
+| language only | 4/96 positive, 2/96 negative | language/word cue without sense-bearing context |
+| marker-matched shuffled | 1/96 positive, 3/96 negative | same language and `[TARGET]`, unrelated context |
+
+For full-minus-language-only, 92/96 CIs were positive. For
+full-minus-shuffled, 84/96 CIs excluded zero; masked-minus-shuffled passed
+90/96. The full semantic-effect median was 2.760 mean/sum-scale units across the
+mixed variants; comparisons should use within-normalization estimates rather
+than this pooled magnitude.
+
+All four full-context failures were concentrated in Gemma-3-12B plain-text
+likelihood (three ID–TL formulations and one ZH–JA formulation). All 48 official
+chat-template variants passed. This protocol sensitivity is part of the
+measurement result rather than an exclusion made after seeing the scores.
+
+The 96 specifications are correlated combinations of model, pair, prompt,
+wrapper and normalization; they are not 96 independent replications. A direct
+batch-size 8 versus 32 stress test found Pearson margin correlations of
+0.9992–0.9998, but 0.6–1.2% cell-level decision sign flips. Qwen2.5 ZH–JA chat
+kept all six full gates at both batch sizes; Gemma-3-12B ID–TL plain changed
+from two to three of six positive CIs. This is numerical decision-boundary
+sensitivity, not evidence for a different semantic mechanism.
+
+### Lexical gloss variants
+
+Twenty-seven ZH–JA items received two additional English lexical realizations
+per sense, in addition to a corrected source-style gloss. All 48 aggregate
+model×mode×normalization×variant CIs excluded zero. However, the percentage of
+items positive under all three variants ranged from 22.2% to 81.5%. Aggregate
+direction is robust; item-level diagnosis is not yet reliable enough for a
+paper without bilingual validation and a repeated-measures model.
+
+### Calibration and benchmark metrics
+
+Content-free calibration raised average both-direction accuracy from 31.9% to
+46.5% in ZH–JA and 41.0% to 55.2% in ID–TL. It also changed the mean ZH–JA
+Stingray-style L1 bias from -0.203 to a small L2 bias of 0.100. This demonstrates
+decision instability; it does not make calibration a novel method.
+
+### Natural-context-only audit
+
+To avoid using translated/replaced conflict cells as ecological evidence, a
+separate analysis retained only each item's natural L1×sense1 and L2×sense2
+cells. Full natural context beat marker-matched shuffled context in 94/96
+specifications, and target-masked natural context did so in 82/96 (46/48 under
+official chat templates). However, full natural context beat an explicit
+language-plus-target cue in only 36/96, with 16 significant reversals. This
+rules out the simple story that richer context always dominates language
+identity and motivates modeling evidence competition explicitly.
+
+### XL-WiC control
+
+Balanced 200-item samples from Chinese, Japanese and German XL-WiC were scored
+with the same forced-choice likelihood protocol. Accuracies ranged from 49% to
+70%, and content-free calibration helped some model/language cells but hurt
+others. This exploratory control shows that the new false-friend effect cannot
+be summarized as universally strong WSD. A formal comparison must use official
+XL-WiC classifiers or established LLM-WSD protocols.
+
 ## Data and design
 
 The causal pilot selected 50 exact NFKC-identical Chinese–Japanese false
@@ -93,9 +187,21 @@ the original overwrite claim.
   logprob APIs or repeated randomized forced choice.
 - Candidate gloss quality and translation asymmetry remain possible sources of
   noise.
-- The paired metric may partly reflect language identification. In a homograph
-  setting language is a legitimate sense cue, but the full study must separate
-  language ID, local lexical context, and broader sentence semantics.
+- Stingray's crossed conflict cells are annotator-constructed by translating a
+  sentence and replacing the correct L2 word with the false friend. This is a
+  useful intervention but produces conspicuously odd contexts; natural
+  non-replacement counterfactuals are still required.
+- New lexical gloss variants were inspected for sense preservation but have not
+  yet been independently validated by bilingual human annotators.
+- The diagonal paired metric partly reflects language identification. The new
+  factorial separates language and intended-context main effects, but natural
+  contexts are still needed to separate local lexical cues from broader
+  sentence semantics.
+- A source-field equality check was insufficient: composite forms, inflections
+  and translated synonyms could make the listed target absent from a context.
+  The strict loader now checks literal CJK occurrence or standalone Latin-word
+  occurrence in every cell; this reduced the factorial sample from 29/48 to
+  27/33.
 - Public datasets remain governed by their own licenses; raw text and adapters
   are intentionally not redistributed here.
 

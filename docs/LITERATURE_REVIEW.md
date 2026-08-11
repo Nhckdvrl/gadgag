@@ -35,6 +35,23 @@ are not defensible primary contributions.
   calibration itself is also not new.
 - [MCL-WiC (SemEval 2021)](https://aclanthology.org/2021.semeval-1.3/)
   evaluates multilingual/cross-lingual word-in-context sense identity.
+- [XL-WiC (EMNLP 2020)](https://aclanthology.org/2020.emnlp-main.584/)
+  provides expert-curated identical-word context pairs in 12 languages and is
+  the key general semantic-contextualization control.
+- [Do Large Language Models Understand Word Senses? (EMNLP 2025)](https://aclanthology.org/2025.emnlp-main.1720/)
+  compares instruction-tuned LLMs in WSD and generative definition/explanation
+  tasks. It makes a broad “LLMs understand senses” claim unavailable and
+  motivates comparing evaluation formulations.
+- [Prompt Balance Matters (GlobalNLP 2025)](https://aclanthology.org/2025.globalnlp-1.2/)
+  shows that imbalanced demonstrations bias multilingual WSD prompts. This is
+  direct evidence that prompt-level decision effects matter, but it does not
+  cross sentence language and intended sense for an exact false friend.
+- [SemEval-2026 Task 5 / AmbiStory](https://aclanthology.org/2026.semeval-1.448.pdf)
+  replaces a single hard WSD label with human graded sense-plausibility ratings.
+  It makes any generic “first to go beyond WSD accuracy” claim unavailable. XCA
+  must instead claim the narrower methodological novelty of separating
+  correlated language, semantic-context and answer-decision cues in a
+  cross-lingual homograph setting.
 - [ContraWSD](https://aclanthology.org/W18-6437/) and
   [MuCoW](https://aclanthology.org/W19-5354/) use contrastive WSD test suites for
   machine translation; [DiBiMT (Computational Linguistics 2025)](https://aclanthology.org/2025.cl-2.1/)
@@ -46,20 +63,20 @@ baselines.
 
 ## Gap supported by this pilot
 
-We did not find a study that jointly:
+After a second targeted search on 2026-08-11, we did not find a study that jointly:
 
-1. represents each cross-lingual false friend with natural L1/L2 paired
-   contexts and the same two competing senses;
-2. factorizes absolute answer resolution into a context-sensitive sense-switch
-   term and a stable candidate/language-prior term;
-3. validates that factorization using controlled surface-only versus
-   conflicting-meaning adaptation;
-4. uses the result to audit whether “homograph shortcut” errors reflect semantic
-   insensitivity or a prior strong enough to prevent an otherwise correct
-   contextual shift from crossing the decision boundary.
+1. crosses sentence language and intended sense for the same exact-form
+   cross-lingual false friend;
+2. separately estimates surrounding semantic-context evidence, language
+   convention and decision resolution;
+3. validates the semantic component with target masking, language-only,
+   shuffled-context, repeated-gloss, chat and scoring controls;
+4. uses the decomposition to audit whether homograph-benchmark errors reflect
+   absent contextual evidence or evidence that fails at the decision boundary.
 
-The novelty target is this *cross-lingual lexical construct validation plus
-causal component intervention*, not any one formula in isolation.
+The novelty target is this *crossed-context construct audit*, not “beyond
+accuracy” in general, calibration, contrastive scoring, WSD, false-friend
+collection, or any one formula alone.
 
 ## Why the gap matters beyond homographs
 

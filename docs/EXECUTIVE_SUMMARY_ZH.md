@@ -1,77 +1,117 @@
-# 执行摘要：pilot 最终判断
+# 执行摘要：第二轮 construct-killer 后的最终判断
 
-## 一句话结论
+## 结论
 
-原题 **“单语言适配通过同形异义词造成另一语言的定向语义覆盖”应当停止**；真实实验发现，其最漂亮的初始信号主要是候选表面频率造成的假象。与此同时，反证过程中得到一个更宽、可扩展且尚未被现有同形词 benchmark 正确处理的问题：
+原来的 **Cross-Lingual Semantic Overwrite 正式 KILL，不再抢救**。
 
-> **跨语言词汇干扰的因果分解：如何区分语言条件化的词义敏感性与表面/候选先验？**
+附件对第一版新题的批评也成立：旧 `SenseSwitch` 同时改变语言、语境和部分词形，`(m1+m2)/2` 只是坐标中点，不能提前命名为 candidate prior。因此仓库已经撤回“causal decomposition into semantic sensitivity and candidate prior”的强表述。
 
-英文工作标题：
+但新的 2×2 反事实实验通过了最关键的 construct killer。最终建议题目是：
 
-> **Right Direction, Wrong Answer: Causally Decomposing Cross-Lingual Lexical Interference**
+> **Right Direction, Wrong Answer? Auditing Cross-Lingual Sense Disambiguation Beyond Accuracy**
 
-这个结论不是文献猜测，而是经过两轮模型、两种语言对、双折 crossover、剂量曲线、中性表面控制、语境去先验控制、模块消融和失败方法对照后收束出来的。
+中文：
 
-## 原假设为什么被否定
+> **答错但方向对？超越准确率审计跨语言同形异义词消歧**
 
-在 Qwen2.5-7B 上，对 50 个 Unicode 完全相同的中日 false friends 做两折 crossover：每折 25 个词接受中文适配、25 个 held out，每个词最终既当处理组也当自身对照。
+核心一般问题是：
 
-- 中文冲突义暴露 32 次后，原始日语候选 margin 的处理效应为 **-0.462**，95% bootstrap CI **[-0.695, -0.238]**。
-- Qwen3-8B 的 32 次暴露复现为 **-0.392 [-0.642, -0.157]**。
-- 看起来像 overwrite，但直接用日语释义评价时效应不显著：**-0.198 [-0.469, 0.075]**。
-- 更致命的是，只重复词形、不提供中文冲突词义的 neutral control 产生更大的效应：**-0.942 [-1.178, -0.717]**。
-- 把真实日语上下文分数减去匹配的乱序日语上下文分数后，冲突适配效应变成 **-0.018 [-0.452, 0.404]**；English–German 的剂量 8 结果也从显著的 **-0.363 [-0.710, -0.022]** 变为不显著的 **-0.147 [-0.631, 0.348]**。
+> **Evaluation failure 不等于 evidence extraction failure。** 最终错误究竟来自没有利用语境，还是提取了正确证据、但没有跨过语言/答案偏置造成的决策边界？
 
-因此，原始指标主要测到了训练后候选同形字符串的无条件概率上升，而非另一语言的语境语义表征被覆盖。严格 stop criterion 下，原题为 **KILL**。
+## 真正拆开的 2×2
 
-## 实验中出现的新现象
+Stingray 每个 false friend 的两行实际给出了四个单元：
 
-我们把同一个 false friend 放进自然的 L1 和 L2 语境，并固定两边候选义。设：
+| | sense 1 语境 | sense 2 语境 |
+|---|---|---|
+| L1 语言 | `m11` | `m12` |
+| L2 语言 | `m21` | `m22` |
+
+因此可以分别估计：
 
 ```text
-m1 = log P(L2义 | L1语境) - log P(L1义 | L1语境)
-m2 = log P(L2义 | L2语境) - log P(L1义 | L2语境)
-SenseSwitch = m2 - m1
-CandidatePrior = (m2 + m1) / 2
+Semantic Context Evidence, Esem = [(m12+m22) - (m11+m21)] / 2
+Language Convention Evidence, Elang = [(m21+m22) - (m11+m12)] / 2
+Interaction = (m22-m21) - (m12-m11)
 ```
 
-传统准确率要求 L1 语境选 L1 义、L2 语境选 L2 义，两边都必须过零；`SenseSwitch` 则问语境切换是否让证据朝正确方向移动。两者必须同时报告，不能用后者掩盖错误。
+旧 diagonal switch `m22-m11` 实际混合了 `Esem + Elang`。现在两者不再混称 semantic sensitivity。
 
-初步结果：
+## Gate 实验
 
-| 模型 | 语言对 | 两边都答对 | 正向 SenseSwitch |
-|---|---:|---:|---:|
-| Qwen2.5-7B | EN–DE | 44.9% | 95.9% |
-| Qwen2.5-7B | ZH–JA | 45.6% | 87.7% |
-| Qwen3-8B | EN–DE | 44.9% | 89.8% |
-| Qwen3-8B | ZH–JA | 33.3% | 82.5% |
-| Gemma-3-4B | EN–DE | 32.7% | 81.6% |
-| Gemma-3-4B | ZH–JA | 24.6% | 71.9% |
-| Gemma-3-12B | EN–DE | 30.6% | 95.9% |
-| Gemma-3-12B | ZH–JA | 7.0% | 64.9% |
+只保留 NFKC 完全相同表记：
 
-所有八个条件的平均 sense switch 的 95% CI 都在 0 以上。也就是说，模型经常在绝对答案上失败，但语言语境改变产生的相对证据方向是正确的。当前“答对/答错”容易把稳定的语言/候选先验误诊为完全不懂跨语言词义。
+- ZH–JA：27 词；
+- ID–TL：33 词。
 
-最后，我们把这个分解用于保存的适配器。冲突词义适配使 sense switch 下降 **-0.384 [-0.740, -0.033]**，中性词形重复为 **-0.057 [-0.336, 0.220]**。不过两者的直接 difference-in-differences 为 **-0.327 [-0.695, 0.028]**，仍略跨 0；两个单侧语境分量也各自不显著。因此这是值得预注册复验的动态干扰线索，**不是已经证实的 semantic overwrite**。它使最终题目可以研究干扰的两个成分，但不允许恢复原题的强结论。
+这里不仅要求 `Cognates` 字段 NFKC 相同，还要求该目标词确实出现在四个上下文中；复合记录、词形变化和用同义词替换目标词的行均被排除。
 
-## 为什么新题不是“再做一个 benchmark”
+四个 checkpoint：Qwen2.5-7B、Qwen3-8B、Gemma-3-4B、Gemma-3-12B。每个模型同时运行 plain/chat、mean/sum logp、三种答案 wrapper。
 
-核心贡献应当是测量模型和因果审计，而不是扩数据或排模型名次：
+| 条件 | 变体数 | Semantic effect 的 95% CI > 0 |
+|---|---:|---:|
+| 完整 2×2 语境 | 96 | **92**（official chat 48/48） |
+| 遮掉目标词、只留周围语义 | 96 | **91** |
+| 只有语言信息、无 sense context | 96 | 4 正、2 负 |
+| 同语言、同 `[TARGET]` marker、换成其他词的语境 | 96 | 1 正、3 负 |
 
-1. 提出双轴诊断：**absolute resolution** 与 **context sensitivity**，并显式分解 candidate prior。
-2. 用 surface-only、meaning-conflict、shuffled-context、candidate-order/paraphrase 等干预验证每个指标究竟测什么。
-3. 审计现有 cross-lingual homograph 结论在去先验后是否仍成立，并区分“语义不敏感”“方向正确但先验太强”“真正稳定正确”三类模型行为。
-4. 把方法推广到多个脚本、资源不平衡程度和语言距离，研究何时表面先验压倒语境证据。
+直接 paired contrast：
 
-通用 contextual calibration 已有成熟先例，因此不能声称“首次去除选项先验”。真正的 novelty 是：把自然双语 sense-switch 作为 false-friend 的成对反事实，结合训练干预做 construct validation，并重新解释现有 homograph benchmark 的失败来源。
+- full − language-only：92/96 显著为正；
+- full − shuffled：84/96 显著为正；
+- masked − shuffled：90/96 显著为正。
 
-## 最终建议
+4 个 full gate 失败均来自 Gemma-3-12B 的 plain-text likelihood（ID–TL 三个、ZH–JA 一个）；官方 chat-template 的 48 个检验全部通过。这不是应被隐藏的异常，而是“decision formulation 本身需要审计”的直接证据。96 个 cells 是相关的 robustness specifications，不是独立重复或可当作 96 个新样本。
 
-**有条件 GO，评分约 7.5/10。** 它比原来的 overwrite 题更可信，也比单纯日中错误分析更宽：主问题是对 cross-lingual lexical interference 做可识别的因果分解，homograph 是最干净的自然实验床。正式定题前的硬门槛是：
+## 只用自然语境的生态检查
 
-- 在至少 4 个语言对、6 个模型上复现“严格准确率与 sense switch 分离”；
-- 对 candidate paraphrase、顺序、语言标签和同语乱序语境保持稳定；
-- 由人工标注者确认高 switch/低 accuracy 的样本确实包含正确的相对语境证据；
-- 与 contextual calibration、Stingray 原指标、MCL-WiC/WSD 对照，证明新分解改变了有科学意义的模型诊断，而不只是换算分数。
+四格中的 conflict cells 是翻译替词反事实，因此另做只使用 L1×sense1、L2×sense2 两条原始自然正确用法的分析：
 
-如果这四项有两项失败，就停止，不把它缩成“某一种日中同形词的指标”。
+- full natural − marker-matched shuffled：94/96（chat 48/48）；
+- masked natural − marker-matched shuffled：82/96（chat 46/48）；
+- full natural − explicit language+target cue：只有 36/96 为正，且 16/96 显著为负。
+
+前两项说明自然周围语义确实能提供 candidate-specific evidence；第三项说明显式语言约定本身往往已经是极强线索，甚至强于长语境。故论文不能讲“模型会语义、只是 bias 害了它”这种单因故事，必须研究多种 evidence source 与 decision rule 的竞争。
+
+另将 scoring batch size 从 32 改为 8 做数值压力测试：两个代表性配置的连续 margin 相关均 >.999，但仍有 0.6%–1.2% cell 决策换号；最脆弱的 Gemma-3-12B plain 配置有一个 aggregate CI 改变过零结论，Qwen2.5 chat 六个 gate 不变。因此 92/96 是协议稳健性描述，不能冒充 96 次独立统计重复；正式主分析必须预先固定 chat template，并用 hierarchical repeated-measures inference。
+
+所以这个现象不能再被解释成“中文句子选中文义、日语句子选日语义”这么简单。模型确实在使用 sense-bearing surrounding context。
+
+## Tokenization 与措辞稳健性
+
+旧 `candidate_score` 独立 tokenize prompt/candidate 后拼 token ID，已经被新 scorer 替换。plain 模式现在 tokenize 完整字符串并断言 prefix token 稳定；chat 模式使用官方 `apply_chat_template` 的 generation boundary。
+
+- mean 与 sum 两种评分均进入 96 个 gate；official chat 全部通过，plain 有 5 个 CI 跨零。
+- 三种 wrapper 在 lexical-variant aggregate 层面均通过。
+- 对 27 个 ZH–JA strict homographs 另外写了两套 lexical gloss variants；四模型×plain/chat×mean/sum 共 48 个 aggregate CI 全部 > 0。
+- 但 item-level 三种 gloss 均同方向的比例只有 22.2%–81.5%，说明**单条样本诊断仍然明显受 gloss wording 影响**。正式研究必须把 gloss 当 repeated-measure，并进行独立双语人工验证，不能只选一个最漂亮释义。
+
+## Decision bias 而不是 midpoint prior
+
+`margin midpoint` 只作描述。我们另外用 content-free prompt 估计 decision baseline。
+
+跨模型、prompt 和 wrapper 平均：
+
+| Pair | Raw 两向均正确 | Content-free calibrated |
+|---|---:|---:|
+| ZH–JA | 31.9% | **46.5%** |
+| ID–TL | 41.0% | **55.2%** |
+
+ZH–JA 的 Stingray-style bias 平均从 -0.203 变成 0.100，说明原来明显的 L1 偏置会被决策校准实质改变。但 contextual calibration 已有成熟工作，所以它只是 baseline 和因果诊断工具，不是 novelty。
+
+## XL-WiC 对照
+
+在每种语言抽取 200 条 expert-curated XL-WiC，四个小型模型的 forced-likelihood accuracy 大约为 49%–70%，content-free calibration 的影响方向不一致。这说明：
+
+1. 新 effect 不是“这些模型在任何 WSD 任务上都很强”；
+2. 当前 XL-WiC forced-choice prompt 本身也受 decision formulation 影响；
+3. 正式论文需要采用 XL-WiC 官方分类基线或成熟 WSD system，而不是用这组 exploratory likelihood 数字宣布跨任务优越性。
+
+## 最终评分
+
+- 原 semantic overwrite：**1/10，KILL**；
+- 第一版 `semantic sensitivity + candidate prior` 因果解释：**KILL**；
+- “Right Direction, Wrong Answer” score-level phenomenon：**7.5/10**；
+- 经过 2×2 construct audit 的新题：**7.5/10，有条件 GO 进入正式 pilot**。
+
+它不再是“再做一个 benchmark”，而是提出一个 measurement question 和可验证的 crossed-context audit。下一阶段必须扩大到自然非替换语境、其他数据资源和人工判断；若这些条件下 semantic-context component 消失，就停止，而不是继续缩题。

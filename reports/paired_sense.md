@@ -1,6 +1,6 @@
 # Paired bilingual sense-switch pilot
 
-| pair   | model      |   n |   l1_accuracy |   l2_accuracy |   both_accuracy |   switch_positive |   mean_sense_switch |   ci_low |   ci_high |   mean_candidate_prior |
+| pair   | model      |   n |   l1_accuracy |   l2_accuracy |   both_accuracy |   switch_positive |   mean_sense_switch |   ci_low |   ci_high |   mean_diagonal_midpoint |
 |:-------|:-----------|----:|--------------:|--------------:|----------------:|------------------:|--------------------:|---------:|----------:|-----------------------:|
 | en_de  | gemma3_12b |  49 |      0.857143 |      0.428571 |       0.306122  |          0.959184 |             8.43529 | 6.73626  |  10.0586  |              -4.79952  |
 | en_de  | gemma3_4b  |  49 |      0.795918 |      0.510204 |       0.326531  |          0.816327 |            11.8025  | 8.36872  |  15.2298  |              -4.63829  |
