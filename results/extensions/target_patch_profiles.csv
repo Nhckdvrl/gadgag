@@ -1,0 +1,7 @@
+model,component,profile_correlation,ff_significant_layers,mono_significant_layers,ff_peak_layer,mono_peak_layer
+gemma3_12b,attention,-0.21982373815286832,1,0,8,4
+gemma3_12b,mlp,0.5397521420940617,4,2,8,8
+gemma3_12b,residual,0.819754925212182,8,2,16,8
+qwen3_8b,attention,-0.4699679940579617,0,1,4,0
+qwen3_8b,mlp,0.33114166266991335,2,0,8,0
+qwen3_8b,residual,0.9205851103914332,8,2,16,8

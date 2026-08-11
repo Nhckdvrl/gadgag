@@ -7,6 +7,8 @@
     "pandas": "3.0.5",
     "numpy": "2.5.2",
     "nltk": "3.10.2",
+    "wordfreq": "3.1.1",
+    "fugashi": "1.5.2",
     "hardware": "NVIDIA A100 80GB"
   },
   "datasets": {
@@ -53,6 +55,33 @@
       "qwen_candidate_scores": 4608,
       "gemma_candidate_scores": 5760,
       "layer_stride": 4
+    },
+    "B_non_cjk_natural_replication": {
+      "items": {"id_ms": 30, "id_tl": 33},
+      "models": 4,
+      "candidate_wrappers": 3,
+      "normalizations": 2,
+      "masked_minus_unrelated_positive_CI": "48/48"
+    },
+    "A_target_component_patching": {
+      "models": ["Qwen/Qwen3-8B", "google/gemma-3-12b-it"],
+      "components": ["residual", "attention", "mlp"],
+      "layer_stride": 4,
+      "candidate_scores": 27264
+    },
+    "A_strict_matching_audit": {
+      "covariates": ["frequency_l1", "frequency_l2", "frequency_ratio",
+        "token_lengths", "gloss_lengths", "baseline_difficulty"],
+      "exact_bilingual_broad_POS": true,
+      "pairs_at_1SD_each_covariate": 0,
+      "verdict": "failed_common_support_rebuild_controls"
+    },
+    "Doppel_bilingual_review": {
+      "paired_words": 354,
+      "directions": 2,
+      "rows_per_annotator": 708,
+      "annotators_required": 2,
+      "status": "packets_ready_human_review_pending"
     }
   },
   "publication_policy": "Licensed raw text, per-item JSONL, weights, and activations are ignored; deterministic code and aggregate statistics are committed."

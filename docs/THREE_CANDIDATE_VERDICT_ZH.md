@@ -169,6 +169,20 @@ Doppelganger 的 source contexts 和 translations 是人工资源，但本实验
 4. target-token patch、attention/MLP path patch 若不能复现 answer-boundary residual 结果，不称为 mechanism/circuit。
 5. mitigation 若不优于同预算 random/generic steering，方法贡献删除，不救结果。
 
+## 2026-08-11 formal-gate follow-up
+
+上述 Gate 已继续执行，完整审计见
+[`FINAL_GATE_AUDIT_20260811_ZH.md`](FINAL_GATE_AUDIT_20260811_ZH.md)：
+
+- 非 CJK 重复通过：ID–MS/ID–TL 的 masked natural context 相对 matched
+  unrelated context 在 48/48 变体中 CI 大于 0；
+- target-span residual 与 MLP intervention 在 Qwen3/Gemma-12B 复现，attention
+  路径不稳定；
+- 当前 control pool 在双语 POS exact + 每协变量 1-SD caliper 下为 0 对，严格
+  matching Gate 未通过，必须重建 controls；
+- 两份 708 行的 blinded bilingual packet 已生成，但人工标注仍待两位真实中日
+  双语者完成，不能由自动审计替代。
+
 ## 可复现入口
 
 - C：`src/evaluate_carryover.py`、`src/analyze_carryover.py`、`src/analyze_carryover_robustness.py`

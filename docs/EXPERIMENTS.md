@@ -280,3 +280,47 @@ Qwen3 thinking is explicitly disabled for this constrained continuation task.
 The intervention patches only the answer-boundary residual position; therefore
 the pilot establishes causal state transfer but does not yet identify an
 attention/MLP circuit.
+
+### 2026-08-11 formal gates
+
+Generate two independently blinded annotation packets (the resulting private
+CSV files are deliberately gitignored):
+
+```bash
+PYTHONPATH=src .venv/bin/python src/prepare_bilingual_annotation.py \
+  --data-root external/Doppelganger-JC
+```
+
+Run the natural non-CJK replication and item bootstrap:
+
+```bash
+CUDA_VISIBLE_DEVICES=0 PYTHONPATH=src .venv/bin/python \
+  src/evaluate_second_pair_natural.py --pair id_ms \
+  --model Qwen/Qwen3-8B --tag qwen3_8b --data-root external/StingrayBench/data
+PYTHONPATH=src .venv/bin/python src/analyze_second_pair_natural.py
+```
+
+Run the strict common-support audit. The current data produce zero pairs at
+exact bilingual broad-POS plus a per-covariate 1-SD caliper; the complete
+assignment effect must not be reported as a successful strict match.
+
+```bash
+PYTHONPATH=src .venv/bin/python src/analyze_matched_causal.py \
+  --data-root external/StingrayBench/data
+```
+
+Run target-span residual/attention/MLP interchange interventions:
+
+```bash
+CUDA_VISIBLE_DEVICES=0 PYTHONPATH=src .venv/bin/python \
+  src/evaluate_target_component_patching.py \
+  --data-root external/StingrayBench/data --model Qwen/Qwen3-8B \
+  --tag qwen3_8b --items-per-group 20 --layer-stride 4 --batch-size 8 \
+  --output-path results/extensions/target_component_qwen3_8b.jsonl
+PYTHONPATH=src .venv/bin/python src/analyze_target_component_patching.py
+```
+
+The two-model component run generated 27,264 candidate scores. Target residual
+effects replicate in Qwen3-8B and Gemma-3-12B; MLP carries a stable language
+effect and part of the semantic effect, while attention-only effects are
+sparse and unstable.
