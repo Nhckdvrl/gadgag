@@ -1,7 +1,7 @@
-# Right Direction, Wrong Answer?
+# When Context and Language Disagree
 
-This repository records two successive kill-or-go pilots on cross-lingual
-homographs.
+This repository records a sequence of kill-or-go pilots on cross-lingual
+homographs, including a completed three-candidate audit on 2026-08-11.
 
 1. **Semantic overwrite is KILLED.** Its apparent adaptation effect is explained
    by surface/candidate exposure and disappears after the appropriate control.
@@ -10,16 +10,28 @@ homographs.
    sense-bearing context and shows that both contribute to the score movement
    hidden behind many absolute errors.
 
-The recommended working title is:
+After independent natural-context validation, cross-turn robustness tests and
+causal activation patching, the recommended working title is now:
 
-> **Right Direction, Wrong Answer? Auditing Cross-Lingual Sense
-> Disambiguation Beyond Accuracy**
+> **When Context and Language Disagree: Causal Decomposition of
+> Cross-Lingual Lexical Arbitration**
 
 The scientific question is broader than another false-friend leaderboard:
 
 > When a multilingual model answers a lexical-semantic item incorrectly, did it
 > fail to extract contextual evidence, or did correct evidence fail to overcome
 > a language- and answer-dependent decision bias?
+
+The new decisive result is that, on 354 independently authored bidirectional
+Doppelganger-JC items, target-masked natural context beats matched unrelated
+context for **4/4 models**, while restoring the cross-lingual homograph often
+reduces rather than improves the margin. Layer-wise causal patching on Qwen3-8B
+and Gemma-3-12B finds a general-WSD-like semantic profile plus a late
+false-friend-specific language-convention effect. Cross-turn carryover is not
+retained as a standalone topic because its homograph-specific increment is less
+stable under a changed prime role.
+
+![Three-candidate causal result](figures/candidate_a_causal.png)
 
 ## Construct-killer result
 
@@ -113,6 +125,8 @@ aggregate CSVs, reports and figures are included.
 
 ## Read next
 
+- [`docs/ADVISOR_BRIEF_20260812_ZH.md`](docs/ADVISOR_BRIEF_20260812_ZH.md): short advisor briefing
+- [`docs/THREE_CANDIDATE_VERDICT_ZH.md`](docs/THREE_CANDIDATE_VERDICT_ZH.md): full A/B/C evidence and kill decisions
 - [`docs/MENTOR_BRIEF_ZH.md`](docs/MENTOR_BRIEF_ZH.md): concise advisor briefing
 - [`docs/CONSTRUCT_AUDIT_ZH.md`](docs/CONSTRUCT_AUDIT_ZH.md): feedback-by-feedback audit
 - [`docs/RESEARCH_PROPOSAL.md`](docs/RESEARCH_PROPOSAL.md): revised six-month plan

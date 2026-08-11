@@ -1,0 +1,6 @@
+comparison,expected,protocol_cells,ci_in_expected_direction,ci_opposite_direction,median_estimate
+correct_exact_minus_language,positive,144,142,0,12.123202652987352
+wrong_exact_minus_language,negative,144,114,0,-2.901452501826357
+wrong_exact_minus_masked,negative,144,64,1,-0.942523276146034
+wrong_exact_minus_surface,negative,144,47,6,-1.1171846438532653
+wrong_masked_minus_language,negative,144,90,0,-1.6455723678129524

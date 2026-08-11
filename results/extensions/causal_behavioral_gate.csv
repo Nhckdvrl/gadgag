@@ -1,0 +1,9 @@
+model,group,n_items,accuracy,ci_low,ci_high
+gemma3_12b,false_friend,20,0.7,0.6125,0.7875
+gemma3_12b,monolingual_polysemy,20,0.675,0.575,0.775
+gemma3_12b,translation_control,16,1.0,1.0,1.0
+gemma3_12b,true_friend,20,1.0,1.0,1.0
+qwen3_8b,false_friend,20,0.65,0.575,0.725
+qwen3_8b,monolingual_polysemy,20,0.625,0.5,0.75
+qwen3_8b,translation_control,16,1.0,1.0,1.0
+qwen3_8b,true_friend,20,0.975,0.925,1.0

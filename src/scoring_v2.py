@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Iterable
+from typing import Iterable, Sequence
 
 import torch
 
@@ -53,10 +53,22 @@ def prepare(tokenizer, prompt: str, candidate: str, prompt_mode: str) -> tuple[l
     raise ValueError(f"unknown prompt mode: {prompt_mode}")
 
 
+def prepare_chat_messages(tokenizer, messages: Sequence[dict[str, str]],
+                          candidate: str) -> tuple[list[int], int]:
+    """Render a genuine multi-turn chat and append an assistant continuation."""
+    prefix_ids = tokenizer.apply_chat_template(
+        list(messages), tokenize=True, add_generation_prompt=True,
+    )
+    candidate_ids = tokenizer(candidate, add_special_tokens=False).input_ids
+    if not candidate_ids:
+        raise ValueError("candidate tokenized to an empty sequence")
+    return list(prefix_ids) + list(candidate_ids), len(prefix_ids)
+
+
 @torch.inference_mode()
-def score_many(model, tokenizer, examples: Iterable[tuple[str, str]], prompt_mode: str,
-               batch_size: int = 8) -> list[Score]:
-    prepared = [prepare(tokenizer, p, c, prompt_mode) for p, c in examples]
+def score_prepared(model, tokenizer, prepared: list[tuple[list[int], int]],
+                   batch_size: int = 8) -> list[Score]:
+    """Score already-rendered sequences from their continuation boundaries."""
     results: list[Score] = []
     device = next(model.parameters()).device
     pad_id = tokenizer.pad_token_id
@@ -75,7 +87,22 @@ def score_many(model, tokenizer, examples: Iterable[tuple[str, str]], prompt_mod
         targets = input_ids[:, 1:]
         token_logp = logp.gather(-1, targets.unsqueeze(-1)).squeeze(-1)
         for row, (ids, start) in enumerate(batch):
-            # Token at index `start` is predicted by logits at `start - 1`.
             values = token_logp[row, start - 1: len(ids) - 1]
             results.append(Score(values.mean().item(), values.sum().item(), len(values)))
     return results
+
+
+@torch.inference_mode()
+def score_many(model, tokenizer, examples: Iterable[tuple[str, str]], prompt_mode: str,
+               batch_size: int = 8) -> list[Score]:
+    prepared = [prepare(tokenizer, p, c, prompt_mode) for p, c in examples]
+    return score_prepared(model, tokenizer, prepared, batch_size)
+
+
+@torch.inference_mode()
+def score_many_messages(model, tokenizer,
+                        examples: Iterable[tuple[Sequence[dict[str, str]], str]],
+                        batch_size: int = 8) -> list[Score]:
+    prepared = [prepare_chat_messages(tokenizer, messages, candidate)
+                for messages, candidate in examples]
+    return score_prepared(model, tokenizer, prepared, batch_size)
