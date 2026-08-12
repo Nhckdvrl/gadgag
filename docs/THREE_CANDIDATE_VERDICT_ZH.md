@@ -1,5 +1,9 @@
 # 三个候选的完整验证与最终收束（2026-08-11）
 
+> 历史审计记录。当前统一题目、A/B/C 归属和证据状态请以
+> [`RESEARCH_STATUS_AND_EVIDENCE_ZH.md`](RESEARCH_STATUS_AND_EVIDENCE_ZH.md)
+> 为准；本文件中的 A 结论先于最终人工验证门槛，不应视为确认性结果。
+
 ## 结论先行
 
 三个候选都已按预先写下的 kill criteria 做了真实推理实验，而不是只做文献推测。

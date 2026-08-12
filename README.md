@@ -25,14 +25,16 @@ The scientific question is broader than another false-friend leaderboard:
 > fail to extract contextual evidence, or did correct evidence fail to overcome
 > a language- and answer-dependent decision bias?
 
-The new decisive result is that, on 354 independently authored bidirectional
-Doppelganger-JC items, target-masked natural context beats matched unrelated
-context for **4/4 models**, while restoring the cross-lingual homograph often
-reduces rather than improves the margin. Layer-wise causal patching on Qwen3-8B
-and Gemma-3-12B finds a general-WSD-like semantic profile plus a late
-false-friend-specific language-convention effect. Cross-turn carryover is not
-retained as a standalone topic because its homograph-specific increment is less
-stable under a changed prime role.
+The new decisive behavioral result is that, on 354 independently authored
+bidirectional Doppelganger-JC items, target-masked natural context beats matched
+unrelated context for **4/4 models**, while restoring the cross-lingual
+homograph often reduces rather than improves the margin. Exploratory layer-wise
+causal patching on Qwen3-8B and Gemma-3-12B suggests a general-WSD-like semantic
+profile plus a possible later language-convention effect; the
+false-friend-specific confirmatory claim remains locked pending bilingual
+validation and rematching. Cross-turn carryover is not retained as a standalone
+topic because its homograph-specific increment is less stable under a changed
+prime role.
 
 A subsequent formal-gate audit adds two non-CJK replications: masked natural
 context beats marker-matched unrelated context in **48/48** Indonesian–Malay /
@@ -157,14 +159,8 @@ aggregate CSVs, reports and figures are included.
 
 ## Read next
 
-- [`docs/ADVISOR_BRIEF_20260812_ZH.md`](docs/ADVISOR_BRIEF_20260812_ZH.md): short advisor briefing
+- [`docs/RESEARCH_STATUS_AND_EVIDENCE_ZH.md`](docs/RESEARCH_STATUS_AND_EVIDENCE_ZH.md): **canonical topic, A/B/C mapping, results, evidence boundaries, and next gates**
 - [`docs/FINAL_MEASUREMENT_HANDOFF_ZH.md`](docs/FINAL_MEASUREMENT_HANDOFF_ZH.md): frozen final gates, results, and exact handoff
-- [`docs/NEXT_MEETING_20260819_JA.md`](docs/NEXT_MEETING_20260819_JA.md): next advisor-meeting script and slide content
-- [`deliverables/meeting_20260819_lexical_arbitration.pptx`](deliverables/meeting_20260819_lexical_arbitration.pptx): editable next-meeting deck
-- [`docs/FINAL_GATE_AUDIT_20260811_ZH.md`](docs/FINAL_GATE_AUDIT_20260811_ZH.md): formal three-gate audit and advisor-ready verdict
-- [`docs/THREE_CANDIDATE_VERDICT_ZH.md`](docs/THREE_CANDIDATE_VERDICT_ZH.md): full A/B/C evidence and kill decisions
-- [`docs/MENTOR_BRIEF_ZH.md`](docs/MENTOR_BRIEF_ZH.md): concise advisor briefing
-- [`docs/CONSTRUCT_AUDIT_ZH.md`](docs/CONSTRUCT_AUDIT_ZH.md): feedback-by-feedback audit
 - [`docs/RESEARCH_PROPOSAL.md`](docs/RESEARCH_PROPOSAL.md): revised six-month plan
 - [`docs/EXPERIMENTS.md`](docs/EXPERIMENTS.md): complete experiment record
 - [`docs/LITERATURE_REVIEW.md`](docs/LITERATURE_REVIEW.md): novelty boundaries

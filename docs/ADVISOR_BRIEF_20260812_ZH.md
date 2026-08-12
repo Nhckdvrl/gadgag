@@ -1,4 +1,8 @@
-# 给导师的短汇报（2026-08-12）
+# 给导师的短汇报（2026-08-12，历史快照）
+
+> 当前统一题目、A/B/C 归属和证据边界请以
+> [`RESEARCH_STATUS_AND_EVIDENCE_ZH.md`](RESEARCH_STATUS_AND_EVIDENCE_ZH.md)
+> 为准。
 
 > 2026-08-11 最终设计更新：旧 controls 的 common-support 失败已经用 outcome-blind、target-first 的 cardinality matching 修复。新候选池含 11,000 个双语自然语境候选；在不读取 target-model outcomes 的条件下保留 24/27 false friends，并为 true-friend / different-form translation 各冻结 24 个 controls，所有协变量 `|SMD| < .10`。另冻结每类 96 个候选供双语盲审后替换。计算 gate 已通过，真实人工 gate 仍未完成，详见 `FINAL_MEASUREMENT_HANDOFF_ZH.md`。
 
