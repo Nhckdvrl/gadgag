@@ -1,4 +1,4 @@
-# 最后两道 measurement gate：冻结结果与执行交接
+# 最后三道 measurement gate：冻结结果与执行交接
 
 日期：2026-08-11
 
@@ -10,7 +10,7 @@
 >
 > **文脈と言語慣習が衝突するとき：多言語 LLM における語彙的仲裁の分解**
 
-行为主线已经不依赖 collision-specific mechanism：模型能提取 contextual semantic evidence，但 lexical form、sentence language 与答案边界决定该证据能否转化为正确选择。只有本文件的两道人工作业和最终匹配全部通过后，题目才升级为 `Causal Decomposition`，并主张 false-friend-specific causal excess。
+行为主线已经不依赖 collision-specific mechanism：模型能提取 contextual semantic evidence，但 lexical form、sentence language 与答案边界决定该证据能否转化为正确选择。只有本文件的三道人工作业和最终匹配全部通过后，题目才升级为 `Causal Decomposition`，并主张 false-friend-specific causal excess。
 
 ## Gate A：Doppelganger-JC 全量双语效度
 
@@ -64,6 +64,12 @@
 
 每位控制标注者需盲审 192 行，判断：两侧 context 是否表达 proposed meaning、跨语言词义是否等价、自然度、POS 可比性与 blocking confounds。两人都通过的候选才进入最终 cardinality matching。最终必须仍保留至少 20 个 false friends、每类 1:1 controls 且所有 `|SMD| ≤ 0.10`；否则 **删除 false-friend-specific causal excess 主张**。
 
+## Gate C：language-specific controls
+
+按导师要求新增 ordinary language-specific baseline。操作性定义为：两字词的 NFKC exact form 在本语言词典出现、在另一语言词典不出现，并在本语言 Tatoeba 自然句中作为 lexical token 出现。自然语境池为 ZH 7,943 / JA 7,923；outcome-blind final 为 ZH 23 / JA 24，max `|SMD|=.09446/.09668`；4× 人工池为 ZH 92 / JA 96，max `|SMD|=.09739/.09675`。
+
+这一组不能估计对称的 cross-language LCE，因为词在另一语言没有对应 lexical item。它预注册为 one-language contextual-evidence/decision baseline。辞书非收录不是现实“绝对不存在”的证明，所以必须完成 188 行/人的双语盲审。详细标准见 `LANGUAGE_SPECIFIC_CONTROL_PROTOCOL_ZH.md`。
+
 ## 强制执行顺序
 
 ```bash
@@ -88,11 +94,29 @@ PYTHONPATH=src .venv/bin/python src/finalize_prematched_controls.py \
   --valid-controls data/annotation_packets/prematched_controls/analysis/private_valid_control_ids.csv \
   --minimum-false-items 20
 
-# 4. 两个 gate 全部通过才会返回 0；否则返回 2，禁止 confirmatory target analysis
+# 4. 分析 language-specific controls（每人 188 行）
+PYTHONPATH=src .venv/bin/python src/analyze_language_specific_validation.py \
+  --annotator-1 <completed_language_specific_1.csv> \
+  --annotator-2 <completed_language_specific_2.csv> \
+  --key data/annotation_packets/language_specific_controls/private_unblinding_key.csv \
+  --output-dir data/annotation_packets/language_specific_controls/analysis
+
+# 5. 只用双人均通过项重新冻结 language-specific controls
+PYTHONPATH=src .venv/bin/python src/select_language_specific_controls.py \
+  --shortlist data/language_specific_controls/private_shortlist.csv \
+  --difficulty data/language_specific_controls/reference_difficulty.csv \
+  --stingray-root external/StingrayBench/data \
+  --eligible-false-matching data/prematched_controls/frozen_final_matching.csv \
+  --valid-controls data/annotation_packets/language_specific_controls/analysis/private_valid_control_ids.csv \
+  --ratio 1 --smd-bound .1
+
+# 6. 三个人工 gate 全部通过才返回 0；否则返回 2
 PYTHONPATH=src .venv/bin/python src/check_final_measurement_gates.py \
   --doppel-summary data/annotation_packets/doppel_full/analysis/annotation_summary.json \
   --control-summary data/annotation_packets/prematched_controls/analysis/control_validation_summary.json \
   --final-matching-manifest data/prematched_controls/final_matching_manifest.json \
+  --language-specific-summary data/annotation_packets/language_specific_controls/analysis/summary.json \
+  --language-specific-manifest data/language_specific_controls/final_manifest.json \
   --output data/annotation_packets/final_gate_unlocked.json
 
 # 5. 仅在上一步 UNLOCKED 后运行；脚本会再次检查 gate，不能误用旧 controls
@@ -100,6 +124,7 @@ CUDA_VISIBLE_DEVICES=0 PYTHONPATH=src .venv/bin/python src/evaluate_target_compo
   --data-root external/StingrayBench/data --pair zh_ja \
   --model Qwen/Qwen3-8B --tag qwen3_8b_confirmatory \
   --prematched-controls data/prematched_controls/private_final_controls.csv \
+  --language-specific-controls data/language_specific_controls/private_final.csv \
   --gate-status data/annotation_packets/final_gate_unlocked.json \
   --output-path results/extensions/target_component_qwen3_8b_confirmatory.jsonl
 
@@ -107,6 +132,7 @@ CUDA_VISIBLE_DEVICES=0 PYTHONPATH=src .venv/bin/python src/evaluate_target_compo
   --data-root external/StingrayBench/data --pair zh_ja \
   --model google/gemma-3-12b-it --tag gemma3_12b_confirmatory \
   --prematched-controls data/prematched_controls/private_final_controls.csv \
+  --language-specific-controls data/language_specific_controls/private_final.csv \
   --gate-status data/annotation_packets/final_gate_unlocked.json \
   --output-path results/extensions/target_component_gemma3_12b_confirmatory.jsonl
 
@@ -125,7 +151,7 @@ PYTHONPATH=src .venv/bin/python src/analyze_prematched_target_components.py \
 - Doppel reliability 或完整性失败：重建 measurement；B 暂停强主张。
 - 人工有效 controls 后不足 20 组或平衡失败：collision-specific mechanism **KILL**；行为分解 B 保留。
 - 匹配通过但 target causal excess 消失：collision-specific mechanism **KILL**；这仍是有效负结果。
-- 两道人工作业、匹配、target causal excess 全过：升级为 `Causal Decomposition`，再写机制主张。
+- 三道人工作业、匹配、target causal excess 全过：升级为 `Causal Decomposition`，再写机制主张。
 - 不在这些 gate 之前扩模型、语言对、SAE、neuron、mitigation。
 
 ## 方法与资源依据
@@ -139,4 +165,4 @@ PYTHONPATH=src .venv/bin/python src/analyze_prematched_target_components.py \
 
 1. 题目已经 GO：母题仍是 cross-lingual homograph，但一般问题是多语言模型如何在 contextual semantics 与 language-conditioned lexical convention 冲突时进行仲裁。
 2. 行为分解已跨数据生成方式、文字系统、语言对和模型复现；旧 controls 的共同支持失败也已通过 target-first、outcome-blind cardinality design 在计算层面解决为 24×2 个严格平衡 controls。
-3. 目前唯一不能诚实宣称完成的是两位真实双语者的盲审；流程、192/708 行标注包、自动一致性分析和 fail-closed gate 均已就绪，人工通过后才允许跑 collision-specific confirmatory causal analysis。
+3. 目前唯一不能诚实宣称完成的是两位真实双语者的盲审；流程、708/192/188 行标注包、自动一致性分析和 fail-closed gate 均已就绪，人工通过后才允许跑 collision-specific confirmatory causal analysis。

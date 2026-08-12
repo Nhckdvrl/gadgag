@@ -1,0 +1,6 @@
+{
+  "model": "Qwen/Qwen2.5-7B-Instruct",
+  "role": "design-only one-sided difficulty",
+  "target_outcomes_read": false,
+  "items": 3640
+}

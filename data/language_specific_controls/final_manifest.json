@@ -1,0 +1,31 @@
+{
+  "status": "frozen_before_target_outcomes",
+  "ratio": 1,
+  "items_per_language": {
+    "ja": 24,
+    "zh": 23
+  },
+  "smd_bound": 0.1,
+  "exact_contextual_pos": true,
+  "reference_model": "Qwen/Qwen2.5-7B-Instruct",
+  "target_models_read": false,
+  "human_validation_complete": false,
+  "excluded_false_ids_by_language": {
+    "zh": [
+      "zh_ja_003"
+    ],
+    "ja": []
+  },
+  "max_abs_smd": {
+    "ja": 0.09668492104680627,
+    "zh": 0.09446334900312679
+  },
+  "covariates": [
+    "frequency",
+    "char_length",
+    "gloss_tokens",
+    "tok1",
+    "tok2",
+    "reference_difficulty"
+  ]
+}

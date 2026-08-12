@@ -1,0 +1,33 @@
+{
+  "design_stage": "outcome-blind language-specific shortlist",
+  "absence_definition": "NFKC exact form absent from the other language dictionary",
+  "false_items_per_language": {
+    "ja": 24,
+    "zh": 24
+  },
+  "dictionary_unique_before_context": {
+    "zh": 41200,
+    "ja": 31319
+  },
+  "natural_context_pool": {
+    "ja": 7923,
+    "zh": 7943
+  },
+  "shortlist_rows": {
+    "ja": 2400,
+    "zh": 2300
+  },
+  "unique_shortlist_controls": {
+    "ja": 1641,
+    "zh": 1951
+  },
+  "neighbors_per_false": 100,
+  "covariates": [
+    "frequency",
+    "char_length",
+    "gloss_tokens",
+    "tok1",
+    "tok2"
+  ],
+  "target_models_read": false
+}
