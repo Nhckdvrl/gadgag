@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-08-11",
+  "as_of": "2026-08-12",
   "overall": "BLOCKED_ON_REAL_BILINGUAL_ANNOTATION",
   "topic_decision": "GO",
   "behavioral_claim_B": "GO",
@@ -19,6 +19,13 @@
     },
     "target_model_outcomes_read": false
   },
+  "language_specific_control_design": {
+    "status": "COMPUTATIONAL_GATE_PASSED_HUMAN_VALIDITY_PENDING",
+    "final_items": {"zh": 23, "ja": 24},
+    "validation_reservoir": {"zh": 92, "ja": 96},
+    "maximum_abs_smd_final": {"zh": 0.09446334900312679, "ja": 0.09668492104680627},
+    "target_model_outcomes_read": false
+  },
   "confirmatory_collision_specific_analysis": "LOCKED",
-  "unlock_condition": "Two complete independent bilingual annotation sets, reliability gates, human-filtered rematching with at least 20 false friends and max |SMD| <= 0.10"
+  "unlock_condition": "Two complete independent bilingual annotations for Doppel, bilingual controls, and language-specific controls; reliability gates; human-filtered rematching with at least 20 items and max |SMD| <= 0.10"
 }

@@ -18,6 +18,13 @@ names begin with `private_` contain source text and are ignored. The frozen
 matching is outcome-blind; its controls are candidates until two bilingual
 annotators pass them under `../docs/FINAL_MEASUREMENT_HANDOFF_ZH.md`.
 
+`language_specific_controls/` uses an explicitly limited operational label:
+the NFKC-exact form is present in one dictionary and absent from the other.
+Dictionary absence is not proof of real-world language exclusivity. Public files
+contain IDs/features/balance only; `private_*` natural contexts are ignored, and
+human bilingual validation is mandatory under
+`../docs/LANGUAGE_SPECIFIC_CONTROL_PROTOCOL_ZH.md`.
+
 The formal factorial subset is not selected from the `Cognates` field alone.
 `src/stingray_factorial.py` additionally requires the exact CJK string, or a
 standalone case-insensitive Latin word, to occur in all four contexts. This

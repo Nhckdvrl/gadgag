@@ -2,6 +2,8 @@
 
 > 2026-08-11 最终设计更新：旧 controls 的 common-support 失败已经用 outcome-blind、target-first 的 cardinality matching 修复。新候选池含 11,000 个双语自然语境候选；在不读取 target-model outcomes 的条件下保留 24/27 false friends，并为 true-friend / different-form translation 各冻结 24 个 controls，所有协变量 `|SMD| < .10`。另冻结每类 96 个候选供双语盲审后替换。计算 gate 已通过，真实人工 gate 仍未完成，详见 `FINAL_MEASUREMENT_HANDOFF_ZH.md`。
 
+> 2026-08-12 导师反馈后的定位更新：主问题不再写成宽泛的“accuracy 混合多种错误”，而是定位 cross-lingual lexical failure 发生于 contextual evidence extraction 还是后续 lexical arbitration。Tanwar 已做 cognate/non-cognate/homograph 与 incongruent sentences，RoDEval 已说明 WSD accuracy 不足，因此这两点都不作为 novelty。另按导师要求加入 language-specific baseline：outcome-blind final 为 ZH 23 / JA 24，max `|SMD|=.0945/.0967`，4× 人工池为 ZH 92 / JA 96。
+
 ## 这周做了什么
 
 我把 cross-lingual homograph 剩余的三个候选全部做了 kill-or-go pilot，并继续执行了三道 formal gate。使用 4 个 Qwen/Gemma 模型、日中及两个非 CJK 语言对、Doppelganger-JC 的 354 个双向自然上下文，以及 true cognate / different-form translation / English polysemy controls。所有判断使用 candidate log-probability margin 和 item-level bootstrap，不用挑案例。

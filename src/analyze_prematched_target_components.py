@@ -51,6 +51,8 @@ def main() -> None:
     if gate.get("target_confirmatory_analysis_allowed") is not True:
         raise RuntimeError("confirmatory analysis is LOCKED by measurement gates")
     effects = pd.concat([language_effects(path) for path in args.inputs], ignore_index=True)
+    raw = pd.concat([pd.DataFrame(json.loads(line) for line in path.read_text().splitlines())
+                     for path in args.inputs], ignore_index=True)
     matching = pd.read_csv(args.matching, dtype=str)
     output, pair_level = [], []
     for (model, component, layer), frame in effects.groupby(["model", "component", "layer"]):
@@ -93,6 +95,26 @@ def main() -> None:
     primary_result = pd.DataFrame(primary_rows)
     primary_path = args.output.with_name(args.output.stem + "_primary.csv")
     primary_result.to_csv(primary_path, index=False)
+    # One-language controls cannot identify a cross-language main effect. Their
+    # preregistered role is ordinary contextual-evidence transfer: correct-vs-
+    # foil margin after target patch minus the neutral recipient baseline.
+    ls = raw[raw.group.isin(["language_specific_zh", "language_specific_ja"])]
+    ls_pivot = ls.pivot(index=["model","component","layer","id","group"],
+                        columns="candidate_sense",values="mean_logp").reset_index()
+    ls_pivot["correct_margin"] = ls_pivot[1] - ls_pivot[2]
+    baseline = ls_pivot[ls_pivot.layer == -1][["model","id","group","correct_margin"]].rename(
+        columns={"correct_margin":"baseline_margin"})
+    ls_patched = ls_pivot[ls_pivot.layer >= 0].merge(
+        baseline,on=["model","id","group"],validate="many_to_one")
+    ls_patched["contextual_lift"] = ls_patched.correct_margin - ls_patched.baseline_margin
+    ls_rows=[]
+    for keys, frame in ls_patched.groupby(["model","component","layer","group"]):
+        values=frame.contextual_lift.to_numpy(float); low,high=paired_ci(values)
+        ls_rows.append({"model":keys[0],"component":keys[1],"layer":keys[2],
+            "group":keys[3],"n_items":len(values),"contextual_lift":values.mean(),
+            "ci_low":low,"ci_high":high,"positive_rate":(values>0).mean()})
+    pd.DataFrame(ls_rows).to_csv(args.output.with_name(
+        args.output.stem+"_language_specific.csv"),index=False)
     print(primary_result.to_string(index=False))
 
 

@@ -53,6 +53,16 @@ per control group) is frozen because dictionary overlap does not establish
 sense validity. Confirmatory target-model analysis is deliberately locked until
 two bilingual annotators validate both Doppel and control packets.
 
+Following advisor feedback on 2026-08-12, the scientific question is now stated
+as failure localization: when context semantics and language convention
+conflict, does the model fail to extract semantic evidence or does that evidence
+lose during lexical arbitration? The identification design now has five word
+types: false friends, true friends, dictionary-operationalized language-specific
+words, different-form translations and monolingual polysemy. Outcome-blind
+language-specific matching retains 23 Chinese and 24 Japanese controls with max
+`|SMD|=.0945/.0967`; a 4× bilingual-validation reservoir contains 92/96 items.
+These remain candidates—not validated gold—until the human gate passes.
+
 ![Three-candidate causal result](figures/candidate_a_causal.png)
 
 ## Construct-killer result
@@ -149,6 +159,8 @@ aggregate CSVs, reports and figures are included.
 
 - [`docs/ADVISOR_BRIEF_20260812_ZH.md`](docs/ADVISOR_BRIEF_20260812_ZH.md): short advisor briefing
 - [`docs/FINAL_MEASUREMENT_HANDOFF_ZH.md`](docs/FINAL_MEASUREMENT_HANDOFF_ZH.md): frozen final gates, results, and exact handoff
+- [`docs/NEXT_MEETING_20260819_JA.md`](docs/NEXT_MEETING_20260819_JA.md): next advisor-meeting script and slide content
+- [`deliverables/meeting_20260819_lexical_arbitration.pptx`](deliverables/meeting_20260819_lexical_arbitration.pptx): editable next-meeting deck
 - [`docs/FINAL_GATE_AUDIT_20260811_ZH.md`](docs/FINAL_GATE_AUDIT_20260811_ZH.md): formal three-gate audit and advisor-ready verdict
 - [`docs/THREE_CANDIDATE_VERDICT_ZH.md`](docs/THREE_CANDIDATE_VERDICT_ZH.md): full A/B/C evidence and kill decisions
 - [`docs/MENTOR_BRIEF_ZH.md`](docs/MENTOR_BRIEF_ZH.md): concise advisor briefing

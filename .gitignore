@@ -3,6 +3,7 @@ data/items.jsonl
 data/annotation_packets/
 data/prematched_controls/private_*.csv
 data/prematched_controls/candidate_pool_private.csv
+data/language_specific_controls/private_*.csv
 results/adapters/
 results/extensions/adapters/
 results/**/*.jsonl

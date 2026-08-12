@@ -19,7 +19,8 @@ ROOT = Path(__file__).resolve().parents[1]
 COMPONENTS = ("residual", "attention", "mlp")
 
 
-def build_prematched_donors(data_root: Path, controls_path: Path) -> list[dict]:
+def build_prematched_donors(data_root: Path, controls_path: Path,
+                            language_specific_path: Path | None = None) -> list[dict]:
     """Use only the human-filtered, frozen controls and their retained FF scope."""
     controls = pd.read_csv(controls_path)
     required = {"group", "false_id", "control_id", "word_l1", "word_l2",
@@ -62,6 +63,21 @@ def build_prematched_donors(data_root: Path, controls_path: Path) -> list[dict]:
                     "neutral_word": row.word_l1, "neutral_language": names[0],
                     "language_name": names[language - 1],
                     "meaning1": row.meaning, "meaning2": foil})
+    if language_specific_path:
+        language_specific = pd.read_csv(language_specific_path)
+        required_ls = {"group", "id", "language", "word", "context", "meaning",
+                       "foil_meaning"}
+        missing_ls = required_ls - set(language_specific.columns)
+        if missing_ls:
+            raise ValueError(f"{language_specific_path}: missing {sorted(missing_ls)}")
+        for _, row in language_specific.iterrows():
+            language_number = 1 if row.language == "zh" else 2
+            donors.append({"id": str(row.id), "group": str(row.group),
+                "language": language_number, "sense": 1, "word": row.word,
+                "donor": row.context, "neutral_word": row.word,
+                "neutral_language": names[language_number - 1],
+                "language_name": names[language_number - 1],
+                "meaning1": row.meaning, "meaning2": row.foil_meaning})
     for item in monolingual_polysemy(len(false_ids)):
         for sense in (1, 2):
             donors.append({"id": item["id"], "group": "monolingual_polysemy",
@@ -198,6 +214,8 @@ def main():
                         help="Human-filtered private_final_controls.csv")
     parser.add_argument("--gate-status", type=Path,
                         help="Output of check_final_measurement_gates.py")
+    parser.add_argument("--language-specific-controls", type=Path,
+                        help="Human-filtered language-specific private_final.csv")
     parser.add_argument("--output-path", type=Path)
     args = parser.parse_args()
     if bool(args.prematched_controls) != bool(args.gate_status):
@@ -208,7 +226,11 @@ def main():
             raise RuntimeError("confirmatory target analysis is LOCKED by measurement gates")
         if args.pair != "zh_ja":
             raise ValueError("the frozen pre-matched design currently covers zh_ja only")
-        donors = build_prematched_donors(args.data_root, args.prematched_controls)
+        if not args.language_specific_controls:
+            parser.error("confirmatory pre-matched analysis requires "
+                         "--language-specific-controls")
+        donors = build_prematched_donors(args.data_root, args.prematched_controls,
+                                         args.language_specific_controls)
     else:
         donors = build_donors(args.data_root, args.pair, args.items_per_group)
     if args.max_donors:
