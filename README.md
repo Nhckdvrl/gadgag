@@ -16,7 +16,7 @@ The project no longer asks whether false friends are merely difficult. It asks:
 | Five matched word types | test whether the dissociation is collision-specific | computational design passed; human validity pending |
 | A / causal gating | explain the arbitration mechanism | exploratory evidence only; confirmatory analysis locked |
 | C / cross-turn carryover | former standalone candidate | **KILLED** |
-| Mitigation | preserve contextual evidence during lexical choice | future, only after the phenomenon and mechanism gates |
+| Context-Preserving Lexical Arbitration | preserve contextual evidence during lexical choice | future, only after the phenomenon and mechanism gates |
 
 The repository's machine-readable state is
 [`results/extensions/final_measurement_gate_status.json`](results/extensions/final_measurement_gate_status.json).
