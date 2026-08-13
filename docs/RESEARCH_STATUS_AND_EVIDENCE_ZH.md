@@ -1,8 +1,8 @@
 # 研究题目、实验结果与证据状态（统一版）
 
-更新日期：2026-08-12
+更新日期：2026-08-13
 
-本文档是当前项目的**唯一总览入口**。它统一说明研究题目、A/B/C 的归属、已经完成的实验、真实结果、尚未完成的验证和可使用的主张。其他文档是协议、代码运行说明或历史审计记录；若表述冲突，以本文和 `results/extensions/final_measurement_gate_status.json` 为准。
+本文档是当前项目的**唯一研究总纲**。它统一说明研究题目、论文叙事、A/B/C 的归属、已经完成的实验、真实结果、尚未完成的验证、解决方法的进入条件，以及给导师的讲解顺序。其他文档只承担实验复现、文献定位、人工验证或英文计划中的一种功能；若表述冲突，以本文和 `results/extensions/final_measurement_gate_status.json` 为准。
 
 ## 1. 当前结论
 
@@ -38,6 +38,21 @@
 - 用合成的完整标注完成工程 dry run，验证人工过滤、重新匹配、gate 解锁、24-pair causal analysis 和 language-specific contextual-lift analysis 可以端到端执行。
 
 最后一项只证明**代码和数据流可运行**。合成标注不是人工证据，不能用于解锁真实确认性结论；仓库当前状态仍为 `BLOCKED_ON_REAL_BILINGUAL_ANNOTATION`。
+
+### 锁定后的整篇研究叙事
+
+研究严格按以下四层推进，后一层不能代替前一层：
+
+| 层次 | 要回答的问题 | 对应工作 | 当前状态 |
+|---|---|---|---|
+| 1. 现象 | 模型是否已经获得正确 contextual evidence，却仍没有作出正确 lexical decision？ | B / crossed-context behavior | **强 GO** |
+| 2. 特异性 | 该 evidence–decision gap 是否超出普通 WSD、词频、表记和题目难度？ | 五类 matched controls + human validation | 计算设计通过，人工未完成 |
+| 3. 机制 | Language convention 在何处因果性地影响最终仲裁？ | A / target-span residual、MLP | exploratory；confirmatory 锁定 |
+| 4. 解决 | 能否保留已抽取的语境证据，避免可见同形表记把最终选择拉回错误语言惯例？ | Context-Preserving Lexical Arbitration（暂名） | 仅为预注册方向，尚未作为贡献 |
+
+这一结构的核心贡献顺序是“发现—识别—解释—解决”，但当前论文最低可成立单位是前两层。若A失败，研究仍可作为严格的行为/measurement工作；若前两层失败，则不允许靠一个方法上的accuracy提升救题。
+
+解决方法的初步原则不是拆token、重做embedding或恢复collision-aware replay，而是利用B的直接观察：`masked context` 已包含正确证据，`full context` 不应在恢复词形后丢失这份证据。可以比较 `M_masked` 与 `M_full`，用context-preservation objective约束恢复target后的正确义margin不下降。它必须与ordinary WSD contrastive training、masked-context auxiliary training、language tag、calibration和等预算SFT比较，并同时保护true friend、translation、language-specific和总体语言能力。只有真实人工验证和collision-specific identification通过后才运行该方法实验。
 
 ## 2. 原 A、B、C 现在分别在哪里
 
@@ -247,7 +262,17 @@ C 检验前一轮出现某个同形词/词义后，下一轮完全相同 target 
 - 不能把 96 个 protocol variants 当作 96 个独立复现；
 - 不能恢复 Semantic Overwrite、Collision-aware Replay 或 C 作为主贡献。
 
-## 9. 下一步唯一正确顺序
+## 9. 当前进度与下一步唯一正确顺序
+
+| 阶段 | 内容 | 状态 | 通过后进入 |
+|---|---|---|---|
+| Step 1 | 文献边界与Main RQ收束 | **完成** | 不再更换主问题 |
+| Step 2 | B：factorial、mask、自然语境、独立数据、非CJK复现 | **完成，强pilot** | collision specificity |
+| Step 3 | 五类control候选构建与outcome-blind matching | **计算完成** | 真实双语验证 |
+| Step 4 | 708/192/188三套双人盲审及human-filtered rematching | **待完成** | confirmatory A解锁 |
+| Step 5 | A：Qwen3/Gemma residual/MLP collision-specific causal excess | **锁定** | 机制结论或kill A |
+| Step 6 | Context-preserving mitigation与严格baselines | **尚未开始** | 可能的方法贡献 |
+| Step 7 | 层级统计、稳健性、论文写作 | **待后续** | 最终论文 |
 
 1. 完成 708/192/188 行的两人独立双语盲审；
 2. 运行一致性与完整性检查；
@@ -258,9 +283,56 @@ C 检验前一轮出现某个同形词/词义后，下一轮完全相同 target 
 
 在 gate 解锁前，不扩模型、不扩更多语言、不做 SAE/neuron、不做 mitigation。当前瓶颈不是 GPU，而是真实双语 measurement validity。
 
-## 10. 给导师的简洁版本
+## 10. 依次向导师讲解的七步
 
-> 私が示したいのは、同形異義語が単に難しいということではありません。多言語 LLM が文脈から正しい語義情報を取得できているにもかかわらず、共有表記や言語側の語義慣習との競合によって最終判断を誤る場合があるのではないか、という点です。そこで、文脈意味の抽出失敗と、その後の語義選択・仲裁の失敗を分けます。現在、行動実験では target を隠しても自然文脈の証拠が複数モデル・非 CJK 言語対で再現しています。一方、同形衝突に特有の因果効果については、五種類の統制語を厳密にマッチングし、二名の bilingual validation が完了するまで確認実験をロックしています。
+不要按“A做了什么、B做了什么、又跑了什么模型”的实验日志顺序讲。每一步只完成一个论证动作。
+
+### 第一步：先界定已经被做掉的问题
+
+讲：Stingray已比较false friends/cognates和语言偏置；Tanwar已做三类词和incongruent sentences；Doppelganger已做日中context/translation与shortcut；RoDEval已说明accuracy不等于sense knowledge。
+
+落点：我们不主张“false friends更难”“context有用”或“accuracy不够”。
+
+### 第二步：给出唯一Main RQ
+
+> 文脈が支持する語義と言語慣習が支持する語義が衝突するとき，多言語LLMの誤りは，文脈語義を抽出できないために生じるのか，それとも正しい語義情報を抽出していても，最終的な語義選択・仲裁で負けるために生じるのか？
+
+说明cross-lingual homograph是固定表记、正交操纵Language×Sense的自然实验床；母问题是多语言模型如何把语义证据映射为词汇选择。
+
+### 第三步：用B展示反直觉现象
+
+只展示一张核心结果表：full 92/96、masked 91/96、language-only 4/96、unrelated 1/96。随后说明96是协议变体，不是独立样本。
+
+落点：target被遮住后，surrounding context中的sense evidence几乎完整保留；单独给language identity或无关语境不能解释它。
+
+### 第四步：用独立自然语境证明不是造句artifact
+
+讲Doppel 354词：4/4模型 `masked−unrelated>0`；恢复homograph没有显著改善，Qwen3/Gemma-4B反而下降。再用ID–MS/ID–TL 48/48说明不是汉字专属。
+
+落点：最重要的finding不是“模型答错”，而是“正确semantic evidence可以存在，却没有控制最终lexical decision”。同时主动说明Doppel option spans仍待双语人工确认。
+
+### 第五步：说明为什么还不能直接归因于homograph collision
+
+展示五类control表，并说明旧controls严格检查后common support为零，所以旧A不能当确认性结论。新outcome-blind matching保留24 false friends、24 true、24 translation，以及中文23/日文24 language-specific controls，所有max `|SMD|<0.10`。
+
+落点：这是设计平衡，不是人工gold；当前瓶颈是708/192/188行的两人双语盲审。
+
+### 第六步：解释A的角色和诚实边界
+
+讲exploratory A发现false friend与monolingual polysemy semantic curve高度一致（0.982/0.999），target residual/MLP有language signal而attention不稳定。
+
+落点：候选解释是general WSD先提供semantic evidence，language convention随后影响arbitration；但collision-specific excess必须等human-filtered rematching后确认。A不是独立题目，也不是已发现circuit。
+
+### 第七步：给出决策树和可能的解决方法
+
+- 人工验证/匹配失败：删除A，只保留B；
+- 匹配通过但causal excess消失：如实kill A；
+- A通过：升级为causal decomposition；
+- 现象与特异性均通过后，才测试context-preserving intervention，要求恢复target后不破坏masked context已有的正确margin，并与普通WSD训练、calibration、language tag和等预算SFT比较。
+
+最后用一句话收束：
+
+> 私が示したいのは、同形異義語が単に難しいということではありません。モデルが文脈から正しい語義情報を取得できているにもかかわらず、共有表記と言語慣習との競合によって、その情報が最終判断に反映されない場合があるのではないか、という点です。
 
 ## 11. 数字与证据文件索引
 
@@ -278,4 +350,4 @@ C 检验前一轮出现某个同形词/词义后，下一轮完全相同 target 
 | C carryover | `results/extensions/carryover_summary.csv`, `carryover_role_robustness.csv` |
 | 当前总 gate 状态 | `results/extensions/final_measurement_gate_status.json` |
 
-复现实验命令见 `docs/EXPERIMENTS.md`；人工门槛和 fail-closed 执行命令见 `docs/FINAL_MEASUREMENT_HANDOFF_ZH.md`；研究定位见 `docs/LITERATURE_REVIEW.md`。
+复现实验命令见 `EXPERIMENTS.md`；人工门槛和 fail-closed 执行命令见 `HUMAN_VALIDATION_AND_GATES_ZH.md`；研究定位见 `LITERATURE_REVIEW.md`。

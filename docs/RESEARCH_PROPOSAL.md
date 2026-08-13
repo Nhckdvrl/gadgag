@@ -56,6 +56,18 @@ the final lexical choice? Use target-span residual/MLP interventions after the
 measurement and matching gates; attention is a stability control, not a circuit
 claim.
 
+### Conditional RQ4 — Context-preserving intervention
+
+Only if RQ1–RQ2 establish a collision-specific evidence–decision gap, can an
+intervention preserve semantic evidence available in the target-masked context
+when the visible lexical form is restored? The initial method family compares
+the correct-versus-conflicting-sense margins under masked and full inputs and
+penalizes evidence loss across that transition. This is conditional future
+work—not a current contribution—and must beat equal-budget supervised WSD,
+masked-context auxiliary training, language tags, calibration and generic
+contrastive baselines without harming cognates, language-specific words or
+overall language ability.
+
 ## Core design: Crossed Lexical Arbitration (CLA)
 
 For candidate margin `m(L,S,G)`—language `L`, sense-bearing context `S`, and
@@ -154,10 +166,14 @@ novelty claim.
 
 ### WP4: Method, only if warranted
 
-Possible method: a small counterfactual calibration set that estimates decision
-baseline across glosses while preserving SCE. Compare it to generic contextual
-and answer-level calibration. Success requires better absolute resolution with
-unchanged or improved semantic-context evidence—not only higher accuracy.
+Possible method: **Context-Preserving Lexical Arbitration**. For the same item,
+estimate the correct-versus-conflicting sense margin with the target masked and
+with the target restored. Penalize cases where restoring the lexical form
+destroys contextual evidence that was already available. Success requires lower
+false-friend evidence loss and better final resolution while preserving true
+friend transfer, ordinary WSD, language-specific processing and overall
+language ability. It must outperform generic calibration and equal-budget
+semantic-training baselines, not only the unmodified model.
 
 ## Six-month schedule
 
