@@ -217,9 +217,9 @@ either checkpoint enter the tables.
 
 ## 2026-08-11 three-candidate validation
 
-The complete interpretation and kill decisions are in
-`docs/THREE_CANDIDATE_VERDICT_ZH.md`. This section records executable entry
-points.
+The current interpretation and A/B/C decisions are in
+`docs/RESEARCH_STATUS_AND_EVIDENCE_ZH.md`. This section records executable
+entry points.
 
 ### C: cross-turn carryover
 
